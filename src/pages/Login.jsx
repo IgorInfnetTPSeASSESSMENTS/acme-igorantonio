@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../infra/firebase.js';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { Box, styled, Link } from '@mui/material';
 import LoginIcon from '@mui/icons-material/Login';
 import { ButtonComponent, TextFieldComponent, TypographyComponent} from '../components';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 
 const Logo = styled('img')({
@@ -15,14 +16,39 @@ const Logo = styled('img')({
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const { resetSessionExpiry } = useAuth();
 
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard'); // Redirecionar para a página inicial após login
+      
+      // Reinicia o tempo de expiração da sessão após o login bem-sucedido
+      resetSessionExpiry();
     } catch (error) {
-      console.error("Error signing in: ", error);
+
+      const errorCode = error.code;
+  
+      switch (errorCode) {
+        case 'auth/invalid-email':
+          setError('Email inválido. Verifique o formato do email.');
+          break;
+        case 'auth/missing-password':
+          setError('Senha não fornecida. Por favor, insira sua senha.');
+          break;
+        case 'auth/wrong-password':
+          setError('Senha incorreta. Tente novamente.');
+          break;
+        case 'auth/invalid-credential':
+          setError('Credenciais de login inválidas. Verifique seu email e senha.');
+          break;
+        case 'auth/too-many-requests':
+        setError('Você tentou logar muitas vezes, tente novamente mais tarde.');
+        break;
+        default:
+          setError('Erro ao fazer login. Tente novamente mais tarde.');
+          break;
+      }
     }
   };
 
@@ -45,10 +71,10 @@ function Login() {
         bottom: 0,
         mx: 'auto',
         p: 2,
-        backgroundImage: `url(src/assets/images/background.jpg)`, // Define a imagem de fundo
-        backgroundSize: 'cover', // Ajusta o tamanho da imagem para cobrir o elemento
-        backgroundPosition: 'center', // Centraliza a imagem de fundo
-        backgroundRepeat: 'no-repeat', // Impede que a imagem se repita
+        backgroundImage: `url(src/assets/images/background.jpg)`, 
+        backgroundSize: 'cover',
+        backgroundPosition: 'center', 
+        backgroundRepeat: 'no-repeat',
       }}
     >
       <Box sx={{ maxWidth: 400, width: '100%', display: 'flex', flexDirection: 'column'}}>
@@ -96,6 +122,12 @@ function Login() {
               Crie uma conta aqui
             </Link>
         </TypographyComponent>
+
+        {error && (
+          <TypographyComponent variant="p" color="warning" sx={{ mb: 2, textAlign:'center', marginTop:'20px', fontWeight: 'bold', fontSize:'20px'}}>
+            {error}
+          </TypographyComponent>
+          )}
       </Box>
     </Box>
   );

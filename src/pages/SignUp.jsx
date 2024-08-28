@@ -1,23 +1,48 @@
 import { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../infra/firebase.js';
+import { auth, db } from '../infra/firebase.js';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Box, Link } from '@mui/material';
 import { ButtonComponent, TextFieldComponent, TypographyComponent, VideoComponent } from '../components/index.jsx';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { keyframes } from '@mui/system';
+import { doc, setDoc } from 'firebase/firestore';
 
 function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  // eslint-disable-next-line no-unused-vars
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSignUp = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard'); // Redirecionar para a página inicial após cadastro
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+  
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        role: "collaborator"
+      });
+  
+      navigate('/dashboard');
     } catch (error) {
-      console.error("Error signing up: ", error);
+      const errorCode = error.code;
+  
+      switch (errorCode) {
+        case 'auth/email-already-in-use':
+          setError('Este email já está em uso. Por favor, utilize outro email.');
+          break;
+        case 'auth/weak-password':
+          setError('Senha muito fraca. Por favor, digite pelo menos 6 caracteres.');
+          break;
+        case 'auth/missing-password':
+          setError('Digite alguma senha de pelo menos 6 caracteres.');
+          break;
+        default:
+          setError('Erro ao criar a conta. Tente novamente mais tarde.');
+          break;
+      }
     }
   };
 
@@ -96,18 +121,18 @@ function SignUp() {
           position: 'absolute',
           top: 0,
           right: '2%',
-          backgroundImage: `url(src/assets/images/logo.png)`, // Caminho para a ilustração
-          backgroundSize: 'cover', // Faz a imagem cobrir todo o contêiner
-          backgroundPosition: 'center', // Centraliza a imagem no contêiner
-          backgroundRepeat: 'no-repeat', // Evita que a imagem se repita
+          backgroundImage: `url(src/assets/images/logo.png)`, 
+          backgroundSize: 'cover', 
+          backgroundPosition: 'center', 
+          backgroundRepeat: 'no-repeat', 
           zIndex:'1',
-          animation: 'slideDown 1s ease-out forwards', // Define a animação
+          animation: 'slideDown 1s ease-out forwards', 
           '@keyframes slideDown': {
             '0%': {
-              top: '-200px', // Começa fora da tela
+              top: '-200px', 
             },
             '100%': {
-              top: '0', // Termina na posição desejada
+              top: '0',
             },
     }
         }}>
@@ -138,29 +163,29 @@ function SignUp() {
             sx={{
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
-                  borderColor: 'white', // Cor do outline
+                  borderColor: 'white', 
                 },
                 '&:hover fieldset': {
-                  borderColor: 'lightgray', // Cor do outline ao passar o mouse
+                  borderColor: 'lightgray', 
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: 'white', // Cor do outline ao focar no campo
+                  borderColor: 'white', 
                 },
               },
               '& .MuiInputLabel-root': {
-                color: 'white', // Cor do label (placeholder)
+                color: 'white', 
               },
               '& .MuiInputBase-input': {
-                color: 'white', // Cor do texto digitado
+                color: 'white', 
               },
               '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Cor do outline quando o campo não está focado
+                borderColor: 'white', 
               },
               '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white', // Cor do label quando o campo está focado
+                color: 'white', 
               },
               '& .MuiInputLabel-root.Mui-focused + .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Cor do outline quando o label está focado
+                borderColor: 'white', 
               }, 
             }}
           />
@@ -175,41 +200,41 @@ function SignUp() {
             sx={{
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
-                  borderColor: 'white', // Cor do outline
+                  borderColor: 'white', 
                 },
                 '&:hover fieldset': {
-                  borderColor: 'lightgray', // Cor do outline ao passar o mouse
+                  borderColor: 'lightgray', 
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: 'white', // Cor do outline ao focar no campo
+                  borderColor: 'white', 
                 },
               },
               '& .MuiInputLabel-root': {
-                color: 'white', // Cor do label (placeholder)
+                color: 'white', 
               },
               '& .MuiInputBase-input': {
-                color: 'white', // Cor do texto digitado
+                color: 'white', 
               },
               '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Cor do outline quando o campo não está focado
+                borderColor: 'white', 
               },
               '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white', // Cor do label quando o campo está focado
+                color: 'white',
               },
               '& .MuiInputLabel-root.Mui-focused + .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Cor do outline quando o label está focado
+                borderColor: 'white',
               },
             }}
           />
-          <ButtonComponent type="submit" variant="contained" startIcon={<PersonAddAltIcon sx={{ color: (theme) => theme.palette.primary.main }} />} // Cor do ícone usando a cor primária
+          <ButtonComponent type="submit" variant="contained" startIcon={<PersonAddAltIcon sx={{ color: (theme) => theme.palette.primary.main }} />}
   sx={{
     mt: 2,
     height: '6vh',
-    backgroundColor: 'white', // Cor de fundo do botão
-    color: (theme) => theme.palette.primary.main, // Cor do texto do botão usando a cor primária
+    backgroundColor: 'white', 
+    color: (theme) => theme.palette.primary.main, 
     '&:hover': {
-      backgroundColor: '#D3D3D3', // Cor de fundo ao passar o mouse
-      color: (theme) => theme.palette.primary.main, // Cor do texto ao passar o mouse
+      backgroundColor: '#D3D3D3', 
+      color: (theme) => theme.palette.primary.main, 
     },
   }}>
             Criar Conta
@@ -229,6 +254,12 @@ function SignUp() {
               Faça login clicando aqui
             </Link>
           </TypographyComponent>
+
+          {error && (
+          <TypographyComponent variant="p" color="#F5F5F5" sx={{ mb: 2, textAlign:'center', marginTop:'20px', fontWeight: 'bold', fontSize:'20px'}}>
+            {error}
+          </TypographyComponent>
+          )}
         </Box>
       </Box>
 
@@ -238,7 +269,7 @@ function SignUp() {
           display: 'flex',
           width: '57%',
           height: '100%',
-          backgroundImage: `url(src/assets/images/illustration.jpg)`, // Caminho para a ilustração
+          backgroundImage: `url(src/assets/images/illustration.jpg)`, 
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           position: 'relative',

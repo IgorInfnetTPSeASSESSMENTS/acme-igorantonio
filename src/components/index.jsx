@@ -11,3 +11,4 @@ export { default as FabComponent } from './Fab';
 export { default as IconButtonComponent } from './IconButton';
 export { default as TypographyComponent } from './Typography';
 export { default as VideoComponent } from './Video';
+export { default as LogoutButton } from './LogoutButton';
