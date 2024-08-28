@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../infra/firebase.js';
-import { Link, useNavigate } from 'react-router-dom';
-import { Box, styled } from '@mui/material';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Box, styled, Link } from '@mui/material';
 import LoginIcon from '@mui/icons-material/Login';
 import { ButtonComponent, TextFieldComponent, TypographyComponent} from '../components';
 
@@ -49,10 +49,6 @@ function Login() {
         backgroundSize: 'cover', // Ajusta o tamanho da imagem para cobrir o elemento
         backgroundPosition: 'center', // Centraliza a imagem de fundo
         backgroundRepeat: 'no-repeat', // Impede que a imagem se repita
-        '@media (max-width: 600px)': {
-      // Ajustes específicos para telas pequenas
-      backgroundSize: 'contain', // Ajusta o tamanho da imagem para que caiba na tela
-    }
       }}
     >
       <Box sx={{ maxWidth: 400, width: '100%', display: 'flex', flexDirection: 'column'}}>
@@ -85,11 +81,20 @@ function Login() {
         <ButtonComponent type="submit" variant="contained" startIcon={<LoginIcon />} sx={{ mt: 2, height:'6vh'}}>
           Iniciar sessão
         </ButtonComponent>
-        <TypographyComponent variant="body2" sx={{ mt: 2 }}>
+        <TypographyComponent variant="body2" sx={{ mt: 2, textAlign: 'center'}}>
           Não tem uma conta?{' '}
-          <Link to="/signup" underline="hover">
-            Crie sua conta clicando aqui
-          </Link>
+          <Link component={RouterLink} to="/signup" 
+          underline='hover'
+            sx={{ 
+              fontWeight: 'bold',
+              color: '#145FF2',
+              '&:hover': {
+      color: '#1A61BE', 
+    } 
+              }} 
+              >
+              Crie uma conta aqui
+            </Link>
         </TypographyComponent>
       </Box>
     </Box>
