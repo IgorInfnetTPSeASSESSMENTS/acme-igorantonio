@@ -1,77 +1,88 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth, db } from '../infra/firebase.js';
-import { doc, getDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+import { onAuthStateChanged } from "firebase/auth";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { auth, db } from "../infra/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
+
+// Cria o contexto de autenticação
 const AuthContext = createContext();
 
+// Componente provedor de autenticação
 // eslint-disable-next-line react/prop-types
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
-  const [sessionExpiry, setSessionExpiry] = useState(null);
-  const navigate = useNavigate();
-
-  const resetSessionExpiry = () => {
-    const expiryTime = new Date().getTime() + 3600000; // 1 hora
-    setSessionExpiry(expiryTime);
-  };
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Hook para navegação
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-        setRole(userDoc.data().role);
+      setLoading(true); // Indica que está carregando
+      console.log("onAuthStateChanged")
 
-        // Configura o tempo de expiração da sessão
-        resetSessionExpiry();
+      if (currentUser) {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+          if (userDoc.exists()) {
+            setUser(currentUser);
+            setRole(userDoc.data().role);
+            navigateToDashboard(userDoc.data().role); // Navega para o dashboard apropriado
+          } else {
+            // Usuário não encontrado na coleção 'users'
+            setUser(null);
+            setRole(null);
+            navigate('/login'); // Redireciona para o login se o usuário não for encontrado
+          }
+        } catch (error) {
+          console.error('Erro ao buscar dados do usuário: ', error);
+          setUser(null);
+          setRole(null);
+          navigate('/login'); // Redireciona para o login em caso de erro
+        }
       } else {
         setUser(null);
         setRole(null);
+        navigate('/login'); // Redireciona para o login se não houver usuário autenticado
       }
+
+      setLoading(false); // Carregamento concluído
     });
 
-    // Verifica a expiração da sessão a cada 5 minutos
-    const interval = setInterval(() => {
-      if (sessionExpiry && new Date().getTime() > sessionExpiry) {
-        setUser(null);
-        setRole(null);
-        signOut(auth).then(() => {
-          navigate('/login'); // Redireciona para a página de login após o logout
-        }).catch((error) => {
-          console.error("Error signing out: ", error);
-        });
-      }
-    }, 300000); // 5 minutos
+    return () => unsubscribe();
+  }, [navigate]);
 
-    return () => {
-      clearInterval(interval);
-      unsubscribe();
-    };
-  }, [sessionExpiry, navigate]);
-
-  useEffect(() => {
-    // Redireciona o usuário após o papel ser carregado
-    if (user && role) {
-      if (role === 'admin') {
-        navigate('/admin-dashboard');
-      } else if (role === 'collaborator') {
-        navigate('/collaborator-dashboard');
-      } else {
-        navigate('/nao-encontrado');
-      }
+  const navigateToDashboard = (userRole) => {
+    if (userRole === 'admin') {
+      navigate('/admin-dashboard');
+    } else if (userRole === 'collaborator') {
+      navigate('/collaborator-dashboard');
+    } else {
+      navigate('/login'); // Redireciona para o login se o papel não for reconhecido
     }
-  }, [user, role, navigate]);
+  };
+
+  const logout = async () => {
+    try {
+      await auth.signOut();
+      navigate('/login'); // Redireciona para o login após o logout
+    } catch (error) {
+      console.error('Erro ao fazer logout: ', error);
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, role, resetSessionExpiry }}>
+    <AuthContext.Provider value={{ user, role, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
+// Hook para usar o contexto de autenticação
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
+  }
+  return context;
 }

@@ -5,8 +5,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Box, styled, Link } from '@mui/material';
 import LoginIcon from '@mui/icons-material/Login';
 import { ButtonComponent, TextFieldComponent, TypographyComponent} from '../components';
-import { useAuth } from '../contexts/AuthContext.jsx';
-
 
 const Logo = styled('img')({
     maxWidth: '100%',
@@ -17,16 +15,14 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { resetSessionExpiry } = useAuth();
 
   const handleLogin = async () => {
     try {
+      console.log("Attempting login with email:", email);
       await signInWithEmailAndPassword(auth, email, password);
-      
-      // Reinicia o tempo de expiração da sessão após o login bem-sucedido
-      resetSessionExpiry();
+      console.log("Login successful");
     } catch (error) {
-
+      console.error("Login error:", error);
       const errorCode = error.code;
   
       switch (errorCode) {
