@@ -21,7 +21,10 @@ export function AuthProvider({ children }) {
         try {
           const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
           if (userDoc.exists()) {
-            setUser(currentUser);
+            setUser({
+              ...currentUser,
+              email: currentUser.email // Inclui o e-mail no estado do usuário
+            });
             setRole(userDoc.data().role);
 
             // Verificar se a página acessada é uma rota específica para o papel do usuário
@@ -32,9 +35,11 @@ export function AuthProvider({ children }) {
             const isContatosPage = location.pathname === '/contatos';
             const isProdutosPage = location.pathname === '/produtos';
             const isCotacoesPage = location.pathname === '/cotacoes';
+            const isGerenciarContasPage = location.pathname === '/gerenciar-contas';
+            const isGerenciarRequisicoesDeCompraPage = location.pathname === '/gerenciar-requisicoes-de-compra';
 
             if (userDoc.data().role === 'admin') {
-              if (!isAdminPage && !isHomePage && !isFornecedoresPage && !isContatosPage && !isProdutosPage && !isCotacoesPage) {
+              if (!isAdminPage && !isHomePage && !isFornecedoresPage && !isContatosPage && !isProdutosPage && !isCotacoesPage && !isGerenciarContasPage && !isGerenciarRequisicoesDeCompraPage) {
                 // Redireciona para o dashboard do admin se não estiver em uma página específica
                 navigate('/admin-dashboard');
               }

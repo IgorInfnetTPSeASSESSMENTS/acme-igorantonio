@@ -16,7 +16,18 @@ function LogoutButton() {
   };
 
   return (
-    <ButtonComponent onClick={handleLogout} variant="contained" color="secondary">
+    <ButtonComponent
+      onClick={handleLogout}
+      variant="contained"
+      sx={{ 
+        fontWeight: 'bold',
+        backgroundColor: '#C41E3A', 
+        color: 'white', 
+        '&:hover': {
+          backgroundColor: '#DE3163', 
+        },
+      }}
+    >
       Logout
     </ButtonComponent>
   );

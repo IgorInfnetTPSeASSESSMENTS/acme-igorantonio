@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import { LogoutButton, NavbarComponent } from '../components';
 import { useAuth } from '../contexts/AuthContext';
-import logo from '../assets/images/logo.png'
+
 function AdminDashboard() {
   const { user, role } = useAuth();
 
@@ -9,12 +9,16 @@ function AdminDashboard() {
     return <p>You do not have access to this section.</p>;
   }
 
+  const userEmail = user ? user.email : '';
+
+
   const buttons = [
-    { name: 'Home', path: '/home' },
     { name: 'Fornecedores', path: '/fornecedores' },
     { name: 'Contatos', path: '/contatos' },
     { name: 'Produtos', path: '/produtos' },
     { name: 'Cotacoes', path: '/cotacoes' },
+    { name: 'Gerenciar Contas', path: '/gerenciar-contas' },
+    { name: 'Gerenciar Requisicoes de compra', path: '/gerenciar-requisicoes-de-compra' },
   ];
 
   return (
@@ -22,10 +26,9 @@ function AdminDashboard() {
       height: '100%',
       width: '100%'
     }}>
-      <NavbarComponent buttons={buttons} />
+      <NavbarComponent buttons={buttons} userEmail={userEmail}/>
       <h1>Admin Dashboard</h1>
       <p>Welcome, {user?.email}</p>
-      {/* Adicione aqui o conteúdo específico do dashboard do admin */}
       <LogoutButton></LogoutButton>
     </Box>
   );
