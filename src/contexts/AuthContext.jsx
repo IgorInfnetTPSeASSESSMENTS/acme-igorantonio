@@ -1,25 +1,21 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { auth, db } from "../infra/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
-
-// Cria o contexto de autenticação
 const AuthContext = createContext();
 
-// Componente provedor de autenticação
-// eslint-disable-next-line react/prop-types
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Hook para navegação
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setLoading(true); // Indica que está carregando
-      console.log("onAuthStateChanged")
+      setLoading(true);
 
       if (currentUser) {
         try {
@@ -27,45 +23,59 @@ export function AuthProvider({ children }) {
           if (userDoc.exists()) {
             setUser(currentUser);
             setRole(userDoc.data().role);
-            navigateToDashboard(userDoc.data().role); // Navega para o dashboard apropriado
+
+            // Verificar se a página acessada é uma rota específica para o papel do usuário
+            const isAdminPage = location.pathname.startsWith('/admin');
+            const isCollaboratorPage = location.pathname.startsWith('/collaborator');
+            const isHomePage = location.pathname === '/home';
+            const isFornecedoresPage = location.pathname === '/fornecedores';
+            const isContatosPage = location.pathname === '/contatos';
+            const isProdutosPage = location.pathname === '/produtos';
+            const isCotacoesPage = location.pathname === '/cotacoes';
+
+            if (userDoc.data().role === 'admin') {
+              if (!isAdminPage && !isHomePage && !isFornecedoresPage && !isContatosPage && !isProdutosPage && !isCotacoesPage) {
+                // Redireciona para o dashboard do admin se não estiver em uma página específica
+                navigate('/admin-dashboard');
+              }
+            } else if (userDoc.data().role === 'collaborator') {
+              if (!isCollaboratorPage && !isHomePage) {
+                // Redireciona para o dashboard do colaborador se não estiver em uma página específica
+                navigate('/collaborator-dashboard');
+              }
+            }
           } else {
-            // Usuário não encontrado na coleção 'users'
+            // Usuário não encontrado
             setUser(null);
             setRole(null);
-            navigate('/login'); // Redireciona para o login se o usuário não for encontrado
+            if (location.pathname !== '/login') {
+              navigate('/login');
+            }
           }
         } catch (error) {
           console.error('Erro ao buscar dados do usuário: ', error);
           setUser(null);
           setRole(null);
-          navigate('/login'); // Redireciona para o login em caso de erro
+          if (location.pathname !== '/login') {
+            navigate('/login');
+          }
         }
       } else {
+        // Nenhum usuário autenticado
         setUser(null);
         setRole(null);
-        navigate('/login'); // Redireciona para o login se não houver usuário autenticado
       }
 
-      setLoading(false); // Carregamento concluído
+      setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [navigate]);
-
-  const navigateToDashboard = (userRole) => {
-    if (userRole === 'admin') {
-      navigate('/admin-dashboard');
-    } else if (userRole === 'collaborator') {
-      navigate('/collaborator-dashboard');
-    } else {
-      navigate('/login'); // Redireciona para o login se o papel não for reconhecido
-    }
-  };
+  }, [navigate, location.pathname]);
 
   const logout = async () => {
     try {
       await auth.signOut();
-      navigate('/login'); // Redireciona para o login após o logout
+      navigate('/login');
     } catch (error) {
       console.error('Erro ao fazer logout: ', error);
     }
@@ -78,7 +88,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-// Hook para usar o contexto de autenticação
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

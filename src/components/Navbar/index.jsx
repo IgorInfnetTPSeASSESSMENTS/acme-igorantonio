@@ -1,76 +1,58 @@
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import PropTypes from 'prop-types'; // Importa PropTypes para validação das props
+import ButtonComponent from '../Button';
 
-const NavbarComponent = () => {
-  const navigate = useNavigate();
-  const [openDrawer, setOpenDrawer] = useState(false);
-
-  const toggleDrawer = () => {
-    setOpenDrawer(!openDrawer);
-  };
+const NavbarComponent = ({ buttons }) => {
+  const location = useLocation(); // Obtém o caminho atual
+  const navigate = useNavigate(); // Hook para navegação
 
   const handleNavigation = (path) => {
-    navigate(path);
-    setOpenDrawer(false); 
+    navigate(path); // Navega para o caminho especificado
   };
 
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={toggleDrawer}
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 2,
+        backgroundColor: '#028CFE',
+      }}
+    >
+      <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', alignItems: 'center' }}>
+        {buttons.map(({ name, path }) => (
+          <ButtonComponent
+            key={path}
+            component={RouterLink}
+            to={path}
+            onClick={() => handleNavigation(path)}
+            sx={{
+              color: 'white',
+              fontWeight: 'bold',
+              textDecoration: location.pathname === path ? 'underline' : 'none',
+            }}
           >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Projects S.A
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        anchor="left"
-        open={openDrawer}
-        onClose={toggleDrawer}
-      >
-        <div
-          role="presentation"
-          onClick={toggleDrawer}
-          onKeyDown={toggleDrawer}
-        >
-          <List>
-            <ListItem button onClick={() => handleNavigation('/')}>
-              <ListItemText primary="Home" />
-            </ListItem>
-            <ListItem button onClick={() => handleNavigation('/login')}>
-              <ListItemText primary="Login" />
-            </ListItem>
-            <ListItem button onClick={() => handleNavigation('/form')}>
-              <ListItemText primary="Form" />
-            </ListItem>
-            <ListItem button onClick={() => handleNavigation('/list')}>
-              <ListItemText primary="List" />
-            </ListItem>
-            <ListItem button onClick={() => handleNavigation('/testecomponentes')}>
-              <ListItemText primary="Todos Os Componentes" />
-            </ListItem>
-          </List>
-        </div>
-      </Drawer>
+            {name}
+          </ButtonComponent>
+        ))}
+      </Box>
+    </Box>
     </>
   );
+};
+
+NavbarComponent.propTypes = {
+  logo: PropTypes.string.isRequired,
+  buttons: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      path: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default NavbarComponent;
