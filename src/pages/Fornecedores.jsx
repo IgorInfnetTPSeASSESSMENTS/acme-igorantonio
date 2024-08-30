@@ -4,7 +4,7 @@ import { excluirFornecedor, inserirFornecedor, listarFornecedores, obterForneced
 import { Box, Button, TextField, Typography, Checkbox } from "@mui/material";
 import { regexEmail, regexNumerico } from "../infra/regex";
 import { DataGrid } from "@mui/x-data-grid";
-import { NavbarComponent } from "../components";
+import { BackButton, FixedBox, NavbarComponent } from "../components";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -117,7 +117,7 @@ export default function Fornecedores({ buttons }) {
     <>
       <NavbarComponent buttons={buttons} userEmail={userEmail} />
       <Box sx={{ padding: 4 }}>
-        <Typography variant="h4" gutterBottom>Cadastro de Fornecedores</Typography>
+        <Typography variant="h4" gutterBottom sx={{marginBottom: 3}}>Cadastro de Fornecedores</Typography>
         <Box component="form" onSubmit={handleSubmit(submeterDados)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
             label="Nome"
@@ -193,6 +193,7 @@ export default function Fornecedores({ buttons }) {
             getRowId={(row) => row.id}
           />
         </Box>
+        <FixedBox><BackButton></BackButton></FixedBox>
       </Box>
     </>
   );

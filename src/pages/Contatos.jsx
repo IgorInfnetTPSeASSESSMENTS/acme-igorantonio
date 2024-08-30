@@ -4,7 +4,7 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { regexEmail, regexNumerico } from "../infra/regex";
 import { inserirContato, obterContato, excluirContato, listarContatos } from "../infra/contatos";
-import { NavbarComponent } from "../components";
+import { BackButton, FixedBox, NavbarComponent } from "../components";
 import { useAuth } from "../contexts/AuthContext";
 import { useParams } from "react-router-dom";
 
@@ -93,7 +93,7 @@ export default function Contatos({ buttons }) {
     <>
       <NavbarComponent buttons={buttons} userEmail={userEmail} />
       <Box sx={{ padding: 4 }}>
-        <Typography variant="h4" gutterBottom>Cadastro de Contatos</Typography>
+        <Typography variant="h4" gutterBottom sx={{marginBottom: 3}}>Cadastro de Contatos</Typography>
         <Box component="form" onSubmit={handleSubmit(submeterDados)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
             label="Nome"
@@ -146,6 +146,7 @@ export default function Contatos({ buttons }) {
             onRowClick={(params) => setContatoIdEmEdicao(params.id)}
           />
         </Box>
+        <FixedBox><BackButton></BackButton></FixedBox>
       </Box>
     </>
   );

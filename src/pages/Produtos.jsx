@@ -5,7 +5,7 @@ import { Box, Button, TextField, Typography, FormControlLabel, Checkbox, MenuIte
 import { DataGrid } from '@mui/x-data-grid';
 import { inserirProduto, excluirProduto, obterProduto, listarProdutos, listarTodosProdutos } from '../infra/produtos';
 import { listarFornecedores } from '../infra/fornecedores'; 
-import { NavbarComponent } from '../components';
+import { BackButton, FixedBox, NavbarComponent } from '../components';
 import { useAuth } from '../contexts/AuthContext';
 
 // eslint-disable-next-line react/prop-types
@@ -145,7 +145,7 @@ export default function Produtos({ buttons }) {
         <>
             <NavbarComponent buttons={buttons} userEmail={userEmail} />
             <Box sx={{ padding: 4 }}>
-                <Typography variant="h4" gutterBottom>Cadastro de Produtos</Typography>
+                <Typography variant="h4" gutterBottom sx={{marginBottom: 3}}>Cadastro de Produtos</Typography>
                 <Box component="form" onSubmit={handleSubmit(submeterDados)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <TextField
                         label="Nome"
@@ -211,6 +211,7 @@ export default function Produtos({ buttons }) {
                         disableSelectionOnClick
                         onRowClick={(params) => setProdutoIdEmEdicao(params.id)}
                     />
+                    <FixedBox><BackButton></BackButton></FixedBox>
                 </Box>
             </Box>
         </>

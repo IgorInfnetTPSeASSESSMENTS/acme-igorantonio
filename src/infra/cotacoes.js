@@ -189,3 +189,56 @@ export async function listarCotacoes(produtoId) {
         throw error;
     }
 }
+
+export async function fetchAllCotacoes() {
+    try {
+      // Recupera todos os fornecedores
+      const fornecedoresRef = collection(db, 'fornecedores');
+      const fornecedoresSnapshot = await getDocs(fornecedoresRef);
+      const fornecedores = fornecedoresSnapshot.docs;
+  
+      // Array para armazenar todas as cotações
+      let todasCotacoes = [];
+  
+      // Itera sobre cada fornecedor
+      for (const fornecedorDoc of fornecedores) {
+        const fornecedorId = fornecedorDoc.id;
+        const fornecedorData = fornecedorDoc.data();
+        const fornecedorNome = fornecedorData.nome; // Ajuste o campo conforme necessário
+  
+        // Recupera todos os produtos do fornecedor
+        const produtosRef = collection(db, 'fornecedores', fornecedorId, 'produtos');
+        const produtosSnapshot = await getDocs(produtosRef);
+        const produtos = produtosSnapshot.docs;
+  
+        // Itera sobre cada produto
+        for (const produtoDoc of produtos) {
+          const produtoId = produtoDoc.id;
+          const produtoData = produtoDoc.data();
+          const produtoNome = produtoData.nome; // Ajuste o campo conforme necessário
+  
+          // Recupera todas as cotações do produto
+          const cotacoesRef = collection(db, 'fornecedores', fornecedorId, 'produtos', produtoId, 'cotacoes');
+          const cotacoesSnapshot = await getDocs(cotacoesRef);
+          const cotacoes = cotacoesSnapshot.docs.map(doc => {
+            const cotacaoData = doc.data();
+            return {
+              id: doc.id,
+              ...cotacaoData,
+              fornecedorNome,
+              produtoNome
+            };
+          });
+  
+          // Adiciona as cotações ao array principal
+          todasCotacoes = todasCotacoes.concat(cotacoes);
+        }
+      }
+  
+      console.log('Todas as Cotações com Fornecedor e Produto:', todasCotacoes);
+      return todasCotacoes;
+    } catch (error) {
+      console.error('Erro ao buscar todas as cotações:', error);
+    }
+  }
+  
