@@ -180,7 +180,7 @@ export default function Produtos({ buttons }) {
                             onChange={(e) => setFornecedorId(e.target.value)}
                             error={!!errors.fornecedor}
                         >
-                            <MenuItem value="todos">Todos os produtos</MenuItem>
+                            <MenuItem value="todos">Todos os produtos (Apenas Listar)</MenuItem>
                             {fornecedores.map((fornecedor) => (
                                 <MenuItem key={fornecedor.id} value={fornecedor.id}>
                                     {fornecedor.nome}

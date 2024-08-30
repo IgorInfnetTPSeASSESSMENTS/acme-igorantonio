@@ -1,105 +1,126 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { listarCotacoes, inserirCotacao, excluirCotacao } from '../infra/cotacoes';
+import { TextField, Button, Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { Box, Button, TextField, Typography } from '@mui/material';
-import { adicionarCotacao, listarCotacoes } from '../infra/cotacoes'; // Atualize os caminhos se necessário
-import { useAuth } from '../contexts/AuthContext';
 import { NavbarComponent } from '../components';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function Cotacoes({ buttons }) {
+const Cotacoes = ({ buttons }) => {
     const { produtoId } = useParams();
     const [cotacoes, setCotacoes] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filteredCotacoes, setFilteredCotacoes] = useState([]);
+    const [preco, setPreco] = useState('');
+    const [dataCotacao, setDataCotacao] = useState('');
+    const [cotacaoId, setCotacaoId] = useState(null);
     const { user } = useAuth();
     const userEmail = user ? user.email : '';
-    const { register, handleSubmit, reset } = useForm();
 
-    // Função para buscar e listar cotações
     useEffect(() => {
-        async function fetchCotacoes() {
+        const fetchData = async () => {
             try {
-                if (produtoId) {
-                    const cotacoesData = await listarCotacoes(produtoId);
-                    setCotacoes(cotacoesData);
-                }
+                const cotacoesList = await listarCotacoes(produtoId);
+                setCotacoes(cotacoesList);
             } catch (error) {
-                console.error('Erro ao buscar cotações:', error);
+                console.error('Erro ao buscar dados:', error);
             }
-        }
-        fetchCotacoes();
+        };
+
+        fetchData();
     }, [produtoId]);
 
-    // Filtra as cotações com base no termo de busca
-    useEffect(() => {
-        if (searchTerm === '') {
-            setFilteredCotacoes(cotacoes);
-        } else {
-            const filtered = cotacoes.filter(cotacao =>
-                cotacao.fornecedorNome.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            setFilteredCotacoes(filtered);
-        }
-    }, [searchTerm, cotacoes]);
-
-    // Função para adicionar uma nova cotação
-    async function adicionarNovaCotacao(dados) {
-        const { preco, data } = dados;
-
+    const handleSubmit = async () => {
         try {
-            await adicionarCotacao(produtoId, {
-                preco,
-                data
-            });
-            // Atualiza a lista de cotações após adicionar
-            const cotacoesData = await listarCotacoes(produtoId);
-            setCotacoes(cotacoesData);
-            reset();
+            if (cotacaoId) {
+                // Atualizar cotação existente
+                await inserirCotacao(produtoId, { preco, dataCotacao });
+            } else {
+                // Inserir nova cotação
+                await inserirCotacao(produtoId, { preco, dataCotacao });
+            }
+            // Atualizar lista de cotações
+            const cotacoesList = await listarCotacoes(produtoId);
+            setCotacoes(cotacoesList);
+            // Limpar campos
+            setPreco('');
+            setDataCotacao('');
+            setCotacaoId(null);
         } catch (error) {
-            console.error('Erro ao adicionar cotação:', error);
+            console.error('Erro ao submeter dados:', error);
         }
-    }
+    };
 
+    const handleDelete = async (cotacaoId) => {
+        try {
+            await excluirCotacao(produtoId, cotacaoId);
+            const cotacoesList = await listarCotacoes(produtoId);
+            setCotacoes(cotacoesList);
+        } catch (error) {
+            console.error('Erro ao excluir cotação:', error);
+        }
+    };
+    
     const columns = [
-        { field: 'preco', headerName: 'Preço', flex: 1 },
-        { field: 'data', headerName: 'Data', flex: 1 },
-        { field: 'fornecedorNome', headerName: 'Fornecedor', flex: 1 },
+        { field: 'fornecedorNome', headerName: 'Fornecedor', width: 200 },
+        { field: 'produtoNome', headerName: 'Produto', width: 200 }, // Nova coluna para o nome do produto
+        { field: 'preco', headerName: 'Preço', width: 150 },
+        { field: 'dataCotacao', headerName: 'Data da Cotação', width: 150 },
+        {
+            field: 'actions',
+            headerName: 'Ações',
+            width: 200,
+            renderCell: (params) => (
+                <>
+                    <Button
+                        onClick={() => handleDelete(params.row.id)}
+                        variant="contained"
+                        color="error"
+                    >
+                        Excluir
+                    </Button>
+                </>
+            )
+        }
     ];
 
     return (
         <>
-            <NavbarComponent buttons={buttons} userEmail={userEmail} />
-            <Box sx={{ padding: 4 }}>
-                <Typography variant="h4" gutterBottom>Cotações</Typography>
-                <Box component="form" onSubmit={handleSubmit(adicionarNovaCotacao)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <TextField
-                        label="Preço"
-                        {...register('preco', { required: 'Preço é obrigatório' })}
-                        InputLabelProps={{ shrink: true }}
-                    />
-                    <TextField
-                        label="Data"
-                        type="date"
-                        {...register('data', { required: 'Data é obrigatória' })}
-                        InputLabelProps={{ shrink: true }}
-                    />
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                        <Button variant="contained" color="primary" type="submit">Adicionar Cotação</Button>
-                    </Box>
-                </Box>
-                <Box sx={{ marginTop: 4 }}>
-                    <TextField
-                        label="Buscar Cotação"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        fullWidth
-                    />
-                    <div style={{ height: 400, width: '100%', marginTop: 2 }}>
-                        <DataGrid rows={filteredCotacoes} columns={columns} pageSize={5} />
-                    </div>
-                </Box>
-            </Box>
+            <NavbarComponent buttons={buttons} userEmail={userEmail}/>
+            <h1>Gerenciar Cotações</h1>
+            <TextField
+                label="Preço"
+                value={preco}
+                onChange={(e) => setPreco(e.target.value)}
+                fullWidth
+                style={{ marginBottom: 16 }}
+            />
+            <TextField
+                label="Data da Cotação"
+                type="date"
+                value={dataCotacao}
+                onChange={(e) => setDataCotacao(e.target.value)}
+                fullWidth
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                style={{ marginBottom: 16 }}
+            />
+            <Button
+                onClick={handleSubmit}
+                variant="contained"
+                color="primary"
+            >
+                {cotacaoId ? 'Atualizar Cotação' : 'Adicionar Cotação'}
+            </Button>
+            <Paper style={{ height: 400, width: '100%', marginTop: 20 }}>
+                <DataGrid
+                    rows={cotacoes}
+                    columns={columns}
+                    pageSize={5}
+                    rowsPerPageOptions={[5]}
+                />
+            </Paper>
         </>
     );
-}
+};
+
+export default Cotacoes;

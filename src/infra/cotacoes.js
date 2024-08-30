@@ -1,61 +1,152 @@
 import { db } from './firebase'; // Atualize o caminho conforme necessário
-import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
+import { listarFornecedores, obterFornecedor } from './fornecedores';
 
 // Função para buscar o produto e o fornecedor associado
 export async function buscarProdutoEFornecedor(produtoId) {
     try {
         console.log(`Buscando produto com ID: ${produtoId}`);
-        
-        // Referência ao documento do produto (agora na coleção correta)
-        const produtoRef = doc(db, `fornecedores/${produtoId}/produtos/${produtoId}`);
-        const produtoSnap = await getDoc(produtoRef);
 
-        if (!produtoSnap.exists()) {
-            throw new Error('Produto não encontrado');
+        // Obter a lista de fornecedores
+        const fornecedores = await listarFornecedores();
+
+        for (const fornecedor of fornecedores) {
+            const fornecedorId = fornecedor.id;
+
+            // Referência ao documento do produto
+            const produtoRef = doc(db, `fornecedores/${fornecedorId}/produtos/${produtoId}`);
+            const produtoSnap = await getDoc(produtoRef);
+
+            if (produtoSnap.exists()) {
+                const produtoData = produtoSnap.data();
+                console.log(`Dados do produto: ${JSON.stringify(produtoData)}`);
+
+                if (!produtoData.fornecedorId) {
+                    console.error(`ID do fornecedor não encontrado no produto com ID ${produtoId}`);
+                    throw new Error('ID do fornecedor não encontrado no produto');
+                }
+
+                // Buscar nome do fornecedor
+                const fornecedorData = await obterFornecedor(produtoData.fornecedorId);
+
+                if (!fornecedorData) {
+                    console.error(`Fornecedor com ID ${produtoData.fornecedorId} não encontrado`);
+                    throw new Error('Fornecedor não encontrado');
+                }
+
+                const fornecedorNome = fornecedorData.nome;
+                console.log(`Dados do fornecedor: ${JSON.stringify(fornecedorData)}`);
+
+                return { produtoData, fornecedorNome };
+            }
         }
 
-        const produtoData = produtoSnap.data();
-        const fornecedorId = produtoData.fornecedorId;
-
-        if (!fornecedorId) {
-            throw new Error('ID do fornecedor não encontrado no produto');
-        }
-
-        // Buscar nome do fornecedor
-        const fornecedorRef = doc(db, `fornecedores/${fornecedorId}`);
-        const fornecedorSnap = await getDoc(fornecedorRef);
-
-        if (!fornecedorSnap.exists()) {
-            throw new Error('Fornecedor não encontrado');
-        }
-
-        const fornecedorData = fornecedorSnap.data();
-        const fornecedorNome = fornecedorData.nome;
-
-        return { produtoData, fornecedorNome };
+        throw new Error('Produto não encontrado em nenhum fornecedor');
     } catch (error) {
         console.error('Erro ao buscar produto e fornecedor:', error);
         throw error;
     }
 }
 
-// Função para listar as cotações
-export async function listarCotacoes(produtoId) {
+
+export async function obterCotacao(produtoId, cotacaoId) {
     try {
-        const { produtoData, fornecedorNome } = await buscarProdutoEFornecedor(produtoId);
+        // Obtenha o produto e o fornecedor associado
+        const { produtoData } = await buscarProdutoEFornecedor(produtoId);
+        const fornecedorId = produtoData.fornecedorId;
 
-        // Referência à coleção de cotações
-        const cotacoesRef = collection(db, `fornecedores/${produtoData.fornecedorId}/produtos/${produtoId}/cotacoes`);
-        const cotacoesSnap = await getDocs(cotacoesRef);
-
-        if (cotacoesSnap.empty) {
-            return [];
+        if (!fornecedorId) {
+            throw new Error('ID do fornecedor não encontrado no produto');
         }
 
-        const cotacoes = cotacoesSnap.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
+        const cotacaoRef = doc(db, `fornecedores/${fornecedorId}/produtos/${produtoId}/cotacoes/${cotacaoId}`);
+        const cotacaoSnap = await getDoc(cotacaoRef);
+
+        if (cotacaoSnap.exists()) {
+            return cotacaoSnap.data();
+        } else {
+            console.error('Cotação não encontrada');
+            return null;
+        }
+    } catch (error) {
+        console.error('Erro ao obter cotação:', error);
+        throw error;
+    }
+}
+
+// Função para listar as cotações
+
+export async function inserirCotacao(produtoId, dados) {
+    try {
+        // Primeiro, obtenha o produto e o fornecedor associado
+        const { produtoData } = await buscarProdutoEFornecedor(produtoId);
+        const fornecedorId = produtoData.fornecedorId;
+
+        if (!fornecedorId) {
+            throw new Error('ID do fornecedor não encontrado no produto');
+        }
+
+        const cotacoesRef = collection(db, `fornecedores/${fornecedorId}/produtos/${produtoId}/cotacoes`);
+
+        // Verificar se a coleção já contém documentos
+        const cotacoesSnapshot = await getDocs(cotacoesRef);
+        if (cotacoesSnapshot.empty) {
+            console.log("Coleção 'cotações' ainda não existe. Criando a primeira cotação...");
+        }
+
+        // Criar uma nova cotação
+        const novaCotacaoRef = doc(cotacoesRef);
+        await setDoc(novaCotacaoRef, dados);
+
+    } catch (error) {
+        console.error('Erro ao inserir cotação:', error);
+        throw error;
+    }
+}
+
+export async function excluirCotacao(produtoId, cotacaoId) {
+    try {
+        // Obtenha o produto e o fornecedor associado
+        const { produtoData } = await buscarProdutoEFornecedor(produtoId);
+        const fornecedorId = produtoData.fornecedorId;
+
+        if (!fornecedorId) {
+            throw new Error('ID do fornecedor não encontrado no produto');
+        }
+
+        const cotacaoRef = doc(db, `fornecedores/${fornecedorId}/produtos/${produtoId}/cotacoes/${cotacaoId}`);
+        await deleteDoc(cotacaoRef);
+    } catch (error) {
+        console.error('Erro ao excluir cotação:', error);
+        throw error;
+    }
+}
+
+export async function listarCotacoes2(produtoId) {
+    try {
+        // Obtenha o produto e o fornecedor associado
+        const { produtoData } = await buscarProdutoEFornecedor(produtoId);
+        const fornecedorId = produtoData.fornecedorId;
+
+        if (!fornecedorId) {
+            throw new Error('ID do fornecedor não encontrado no produto');
+        }
+
+        const cotacoesRef = collection(db, `fornecedores/${fornecedorId}/produtos/${produtoId}/cotacoes`);
+        const querySnapshot = await getDocs(cotacoesRef);
+        const cotacoes = [];
+
+        for (const doc of querySnapshot.docs) {
+            const data = doc.data();
+
+            // Adiciona os dados da cotação com o nome do fornecedor
+            cotacoes.push({
+                id: doc.id,
+                preco: data.preco,
+                dataCotacao: data.dataCotacao,
+                fornecedorNome: produtoData.fornecedorNome // Adicione o nome do fornecedor
+            });
+        }
 
         return cotacoes;
     } catch (error) {
@@ -65,29 +156,36 @@ export async function listarCotacoes(produtoId) {
 }
 
 
-// Função para adicionar uma cotação
-export async function adicionarCotacao(produtoId, cotacao) {
+export async function listarCotacoes(produtoId) {
     try {
+        // Obtenha o produto e o fornecedor associado
         const { produtoData, fornecedorNome } = await buscarProdutoEFornecedor(produtoId);
+        const fornecedorId = produtoData.fornecedorId;
 
-        const cotacoesRef = collection(db, `fornecedores/${produtoData.fornecedorId}/produtos/${produtoId}/cotacoes`);
-
-        if (!fornecedorNome) {
-            throw new Error('Nome do fornecedor não encontrado');
+        if (!fornecedorId) {
+            throw new Error('ID do fornecedor não encontrado no produto');
         }
 
-        const novaCotacao = {
-            preco: cotacao.preco || '', // Definir um valor padrão se necessário
-            data: cotacao.data || '',   // Definir um valor padrão se necessário
-            fornecedorId: produtoData.fornecedorId,
-            fornecedorNome
-        };
+        const cotacoesRef = collection(db, `fornecedores/${fornecedorId}/produtos/${produtoId}/cotacoes`);
+        const querySnapshot = await getDocs(cotacoesRef);
+        const cotacoes = [];
 
-        await setDoc(doc(cotacoesRef), novaCotacao);
+        for (const doc of querySnapshot.docs) {
+            const data = doc.data();
 
-        console.log('Cotação adicionada com sucesso');
+            // Adiciona os dados da cotação com o nome do fornecedor e do produto
+            cotacoes.push({
+                id: doc.id,
+                preco: data.preco,
+                dataCotacao: data.dataCotacao,
+                fornecedorNome: fornecedorNome, // Nome do fornecedor
+                produtoNome: produtoData.nome // Nome do produto
+            });
+        }
+
+        return cotacoes;
     } catch (error) {
-        console.error('Erro ao adicionar cotação:', error);
+        console.error('Erro ao listar cotações:', error);
         throw error;
     }
 }

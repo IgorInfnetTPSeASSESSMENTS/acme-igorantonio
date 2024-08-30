@@ -2,12 +2,20 @@ import { addDoc, collection, deleteDoc, doc, getDoc, getDocs } from "firebase/fi
 import { db } from "./firebase";
 
 // Função para adicionar um produto
+
+/**
+ * ! MODIFIED 
+ */
 export async function inserirProduto(dados) {
     try {
         const { fornecedor, ...produtoData } = dados;
         if (fornecedor === "todos") {
             throw new Error('Não é possível adicionar produtos para "Todos os produtos".');
         }
+
+        // Inclui o fornecedorId nos dados do produto
+        produtoData.fornecedorId = fornecedor;
+
         const produtosCollection = collection(db, 'fornecedores', fornecedor, 'produtos');
         await addDoc(produtosCollection, produtoData);
         console.log('Produto adicionado com sucesso!');
@@ -33,9 +41,15 @@ export async function listarProdutos(fornecedorId) {
     }
 }
 
+/**
+ * ! MODIFIED 
+ */
 // Função para obter um produto específico
 export async function obterProduto(fornecedorId, produtoId) {
     try {
+        if (!fornecedorId || !produtoId) {
+            throw new Error('Fornecedor ID ou Produto ID não fornecido.');
+        }
         const produtoDoc = doc(db, 'fornecedores', fornecedorId, 'produtos', produtoId);
         const produtoSnapshot = await getDoc(produtoDoc);
         if (produtoSnapshot.exists()) {
