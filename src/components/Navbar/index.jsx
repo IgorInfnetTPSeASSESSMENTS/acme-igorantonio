@@ -27,6 +27,8 @@ const NavbarComponent = ({ buttons, userEmail }) => {
     setAnchorEl(null);
   };
 
+  const pathAdmin = '/admin-dashboard'
+
   return (
     <Box
       sx={{
@@ -49,6 +51,7 @@ const NavbarComponent = ({ buttons, userEmail }) => {
             alignItems: 'center',
             gap: 1,
             textTransform: 'none', 
+            textDecoration: location.pathname === pathAdmin ? 'underline' : 'none',
           }}
         >
           <DashboardIcon />

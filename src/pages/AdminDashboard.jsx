@@ -2,7 +2,8 @@ import { Box } from '@mui/material';
 import { LogoutButton, NavbarComponent } from '../components';
 import { useAuth } from '../contexts/AuthContext';
 
-function AdminDashboard() {
+// eslint-disable-next-line react/prop-types
+function AdminDashboard({buttons}) {
   const { user, role } = useAuth();
 
   if (role !== 'admin') {
@@ -10,16 +11,6 @@ function AdminDashboard() {
   }
 
   const userEmail = user ? user.email : '';
-
-
-  const buttons = [
-    { name: 'Fornecedores', path: '/fornecedores' },
-    { name: 'Contatos', path: '/contatos' },
-    { name: 'Produtos', path: '/produtos' },
-    { name: 'Cotacoes', path: '/cotacoes' },
-    { name: 'Gerenciar Contas', path: '/gerenciar-contas' },
-    { name: 'Gerenciar Requisicoes de compra', path: '/gerenciar-requisicoes-de-compra' },
-  ];
 
   return (
     <Box sx={{

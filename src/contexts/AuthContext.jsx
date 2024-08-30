@@ -6,6 +6,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 const AuthContext = createContext();
 
+// eslint-disable-next-line react/prop-types
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
@@ -32,9 +33,9 @@ export function AuthProvider({ children }) {
             const isCollaboratorPage = location.pathname.startsWith('/collaborator');
             const isHomePage = location.pathname === '/home';
             const isFornecedoresPage = location.pathname === '/fornecedores';
-            const isContatosPage = location.pathname === '/contatos';
+            const isContatosPage = location.pathname.startsWith('/contatos/');
             const isProdutosPage = location.pathname === '/produtos';
-            const isCotacoesPage = location.pathname === '/cotacoes';
+            const isCotacoesPage = location.pathname.startsWith('/cotacoes/');
             const isGerenciarContasPage = location.pathname === '/gerenciar-contas';
             const isGerenciarRequisicoesDeCompraPage = location.pathname === '/gerenciar-requisicoes-de-compra';
 
