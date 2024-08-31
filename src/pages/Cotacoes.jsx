@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { Box, Button, TextField, Typography, Select, MenuItem, InputLabel, FormControl, Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { listarCotacoes, inserirCotacao, excluirCotacao, fetchAllCotacoes } from '../infra/cotacoes';
 import { BackButton, FixedBox, NavbarComponent } from '../components';
 import { useAuth } from '../contexts/AuthContext';
+import { DatePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
+import { Timestamp } from 'firebase/firestore';
 
 // eslint-disable-next-line react/prop-types
 const Cotacoes = ({ buttons }) => {
@@ -15,14 +18,25 @@ const Cotacoes = ({ buttons }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const { user } = useAuth();
     const userEmail = user ? user.email : '';
-    // eslint-disable-next-line no-unused-vars
-    const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
+
+    const { control, handleSubmit, reset, register, setValue, formState: { errors } } = useForm({
+        defaultValues: {
+            dataCotacao: dayjs() // Define a data padrão como o dia atual
+        }
+    });
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const cotacoesList = viewMode === 'todas' ? await fetchAllCotacoes() : await listarCotacoes(produtoId);
-                setCotacoes(cotacoesList);
+                // Converte o Timestamp para dayjs antes de definir o estado
+                const updatedCotacoes = cotacoesList.map(cotacao => ({
+                    ...cotacao,
+                    dataCotacao: cotacao.dataCotacao instanceof Timestamp 
+                        ? dayjs(cotacao.dataCotacao.toDate()) 
+                        : dayjs(cotacao.dataCotacao) // Converte para dayjs se já for uma data
+                }));
+                setCotacoes(updatedCotacoes);
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
             }
@@ -41,14 +55,22 @@ const Cotacoes = ({ buttons }) => {
 
     const handleSubmitForm = async (data) => {
         try {
-            if (data.cotacaoId) {
-                await inserirCotacao(produtoId, data);
-            } else {
-                await inserirCotacao(produtoId, data);
-            }
+            // Converte a data do form para um formato de data padrão antes de enviar para o backend
+            const formattedData = {
+                ...data,
+                dataCotacao: dayjs(data.dataCotacao).toDate() // Converte dayjs para Date antes de salvar
+            };
+            await inserirCotacao(produtoId, formattedData);
             reset();
             const updatedCotacoes = viewMode === 'todas' ? await fetchAllCotacoes() : await listarCotacoes(produtoId);
-            setCotacoes(updatedCotacoes);
+            // Converte a data para dayjs após atualizar o estado
+            const cotacoesComDataAtualizada = updatedCotacoes.map(cotacao => ({
+                ...cotacao,
+                dataCotacao: cotacao.dataCotacao instanceof Timestamp 
+                    ? dayjs(cotacao.dataCotacao.toDate()) 
+                    : dayjs(cotacao.dataCotacao) // Converte para dayjs se já for uma data
+            }));
+            setCotacoes(cotacoesComDataAtualizada);
         } catch (error) {
             console.error('Erro ao submeter dados:', error);
         }
@@ -58,7 +80,14 @@ const Cotacoes = ({ buttons }) => {
         try {
             await excluirCotacao(produtoId, cotacaoId);
             const updatedCotacoes = viewMode === 'todas' ? await fetchAllCotacoes() : await listarCotacoes(produtoId);
-            setCotacoes(updatedCotacoes);
+            // Converte a data para dayjs após atualizar o estado
+            const cotacoesComDataAtualizada = updatedCotacoes.map(cotacao => ({
+                ...cotacao,
+                dataCotacao: cotacao.dataCotacao instanceof Timestamp 
+                    ? dayjs(cotacao.dataCotacao.toDate()) 
+                    : dayjs(cotacao.dataCotacao) // Converte para dayjs se já for uma data
+            }));
+            setCotacoes(cotacoesComDataAtualizada);
         } catch (error) {
             console.error('Erro ao excluir cotação:', error);
         }
@@ -68,7 +97,11 @@ const Cotacoes = ({ buttons }) => {
         { field: 'fornecedorNome', headerName: 'Fornecedor', width: 200 },
         { field: 'produtoNome', headerName: 'Produto', width: 200 },
         { field: 'preco', headerName: 'Preço', width: 150 },
-        { field: 'dataCotacao', headerName: 'Data da Cotação', width: 150 },
+        { field: 'dataCotacao', headerName: 'Data da Cotação', width: 150, 
+            renderCell: (params) => dayjs(params.value).isValid() 
+                ? dayjs(params.value).format('DD/MM/YYYY') 
+                : 'Data Inválida' // Formata a data para exibição ou mostra 'Data Inválida'
+        },
         ...(viewMode === 'todas' ? [] : [{
             field: 'actions',
             headerName: 'Ações',
@@ -89,7 +122,9 @@ const Cotacoes = ({ buttons }) => {
         <>
             <NavbarComponent buttons={buttons} userEmail={userEmail} />
             <Box sx={{ padding: 4 }}>
-                <Typography variant="h4" gutterBottom sx={{marginBottom: 2}}>Gerenciar Cotações Deste Produto</Typography>
+                <Typography variant="h4" gutterBottom sx={{ marginBottom: 2 }}>
+                    Gerenciar Cotações Deste Produto
+                </Typography>
                 <Box component="form" onSubmit={handleSubmit(handleSubmitForm)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <TextField
                         label="Preço"
@@ -98,20 +133,36 @@ const Cotacoes = ({ buttons }) => {
                         helperText={errors.preco?.message}
                         fullWidth
                     />
-                    <TextField
-                        label="Data da Cotação"
-                        type="date"
-                        {...register('dataCotacao', { required: 'Data da Cotação é obrigatória' })}
-                        error={!!errors.dataCotacao}
-                        helperText={errors.dataCotacao?.message}
-                        InputLabelProps={{ shrink: true }}
-                        fullWidth
+                    <Controller
+                        name="dataCotacao"
+                        control={control}
+                        rules={{ required: 'Data da Cotação é obrigatória' }}
+                        render={({ field }) => (
+                            <DatePicker
+                                label="Data da Cotação"
+                                {...field}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        error={!!errors.dataCotacao}
+                                        helperText={errors.dataCotacao?.message}
+                                        fullWidth
+                                    />
+                                )}
+                                value={field.value ? dayjs(field.value) : dayjs()} // Define a data padrão como o dia atual
+                                onChange={(date) => field.onChange(date ? date.toDate() : null)}
+                            />
+                        )}
                     />
                     <Box sx={{ display: 'flex', gap: 2 }}>
-                        <Button variant="contained" color="primary" type="submit">Salvar</Button>
+                        <Button variant="contained" color="primary" type="submit">
+                            Salvar
+                        </Button>
                     </Box>
                 </Box>
-                <Typography variant="h4" gutterBottom sx={{paddingTop: 6}}>Visualizar e Filtrar Cotações</Typography>
+                <Typography variant="h4" gutterBottom sx={{ paddingTop: 6 }}>
+                    Visualizar e Filtrar Cotações
+                </Typography>
                 <FormControl fullWidth sx={{ marginTop: 2 }}>
                     <InputLabel id="view-mode-label">Modo de Visualização</InputLabel>
                     <Select
@@ -142,7 +193,9 @@ const Cotacoes = ({ buttons }) => {
                         disableSelectionOnClick
                     />
                 </Paper>
-                <FixedBox><BackButton></BackButton></FixedBox>
+                <FixedBox>
+                    <BackButton />
+                </FixedBox>
             </Box>
         </>
     );

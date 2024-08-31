@@ -37,6 +37,7 @@ const NavbarComponent = ({ buttons, userEmail }) => {
         justifyContent: 'center',
         padding: 2,
         backgroundColor: '#028CFE',
+        height: '70px'
       }}
     >
       <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -45,13 +46,13 @@ const NavbarComponent = ({ buttons, userEmail }) => {
           to="/admin-dashboard"
           onClick={() => handleNavigation('/admin-dashboard')}
           sx={{
-            color: 'white',
             fontWeight: 'bold',
             display: 'flex',
             alignItems: 'center',
             gap: 1,
             textTransform: 'none', 
-            textDecoration: location.pathname === pathAdmin ? 'underline' : 'none',
+            backgroundColor: location.pathname === pathAdmin ? 'white' : '#028CFE',
+            color: location.pathname === pathAdmin ? '#028CFE' : 'white',
           }}
         >
           <DashboardIcon />
@@ -64,9 +65,9 @@ const NavbarComponent = ({ buttons, userEmail }) => {
             to={path}
             onClick={() => handleNavigation(path)}
             sx={{
-              color: 'white',
               fontWeight: 'bold',
-              textDecoration: location.pathname === path ? 'underline' : 'none', 
+              backgroundColor: location.pathname === path ? 'white' : '#028CFE',
+              color: location.pathname === path ? '#028CFE' : 'white',
             }}
           >
             {name}

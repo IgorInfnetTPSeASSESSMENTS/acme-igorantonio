@@ -7,7 +7,6 @@ const ButtonComponent = ({ variant, color, size, onClick, disabled, children, ..
   return (
     <Button
       variant={variant}
-      color={color}
       size={size}
       onClick={onClick}
       disabled={disabled}
@@ -20,7 +19,6 @@ const ButtonComponent = ({ variant, color, size, onClick, disabled, children, ..
 
 ButtonComponent.propTypes = {
   variant: PropTypes.oneOf(['text', 'outlined', 'contained']),
-  color: PropTypes.oneOf(['default', 'inherit', 'primary', 'secondary', 'success', 'error', 'info', 'warning']),
   size: PropTypes.oneOf(['small', 'medium', 'large']),
   onClick: PropTypes.func,
   disabled: PropTypes.bool,

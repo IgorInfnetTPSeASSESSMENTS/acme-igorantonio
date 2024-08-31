@@ -1,3 +1,4 @@
+import './App.css';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider} from './contexts/AuthContext';
 import Login from './pages/Login';
@@ -9,6 +10,8 @@ import Fornecedores from './pages/Fornecedores';
 import Contatos from './pages/Contatos';
 import Produtos from './pages/Produtos';
 import Cotacoes from './pages/Cotacoes';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const buttons = [
   { name: 'Fornecedores', path: '/fornecedores' },
@@ -24,28 +27,30 @@ function App() {
 
   return (
     <AuthProvider>
-      <Routes>
-          {/* Login and Signup */}
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Routes>
+            {/* Login and Signup */}
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
 
-          {/* Dashboards */}
-          <Route
-            path="/admin-dashboard"
-            element={<ProtectedRoute element={<AdminDashboard buttons={buttons} />} roleRequired="admin" />}
-          />
-          <Route
-            path="/collaborator-dashboard"
-            element={<ProtectedRoute element={<CollaboratorDashboard />} roleRequired="collaborator" />}
-          />       
+            {/* Dashboards */}
+            <Route
+              path="/admin-dashboard"
+              element={<ProtectedRoute element={<AdminDashboard buttons={buttons} />} roleRequired="admin" />}
+            />
+            <Route
+              path="/collaborator-dashboard"
+              element={<ProtectedRoute element={<CollaboratorDashboard />} roleRequired="collaborator" />}
+            />       
 
-    	    {/* Pages */}
-          <Route path="/fornecedores" element={<Fornecedores buttons={buttons} />} />
-          <Route path="/produtos" element={<Produtos buttons={buttons} />} />
-          <Route path="/contatos/:fornecedorId" element={<Contatos buttons={buttons} />} />
-          <Route path="/cotacoes/:produtoId" element={<Cotacoes buttons={buttons} />} />
-      </Routes>
+            {/* Pages */}
+            <Route path="/fornecedores" element={<Fornecedores buttons={buttons} />} />
+            <Route path="/produtos" element={<Produtos buttons={buttons} />} />
+            <Route path="/contatos/:fornecedorId" element={<Contatos buttons={buttons} />} />
+            <Route path="/cotacoes/:produtoId" element={<Cotacoes buttons={buttons} />} />
+        </Routes>
+      </LocalizationProvider>
     </AuthProvider>
   );
 }
