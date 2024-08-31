@@ -53,6 +53,10 @@ const NavbarComponent = ({ buttons, userEmail }) => {
             textTransform: 'none', 
             backgroundColor: location.pathname === pathAdmin ? 'white' : '#028CFE',
             color: location.pathname === pathAdmin ? '#028CFE' : 'white',
+            "&.MuiButtonBase-root:hover": {
+                bgcolor: 'white',
+                color: '#028CFE'
+              }
           }}
         >
           <DashboardIcon />
@@ -68,6 +72,10 @@ const NavbarComponent = ({ buttons, userEmail }) => {
               fontWeight: 'bold',
               backgroundColor: location.pathname === path ? 'white' : '#028CFE',
               color: location.pathname === path ? '#028CFE' : 'white',
+              "&.MuiButtonBase-root:hover": {
+                bgcolor: 'white',
+                color: '#028CFE'
+              }
             }}
           >
             {name}
