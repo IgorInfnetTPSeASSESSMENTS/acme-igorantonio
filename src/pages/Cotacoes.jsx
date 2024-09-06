@@ -1,24 +1,19 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
-import { Box, Button, TextField, Typography, Select, MenuItem, InputLabel, FormControl, Paper } from '@mui/material';
+import { Box, Button, TextField, Typography, Select, MenuItem, InputLabel, FormControl} from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { listarCotacoes, inserirCotacao, excluirCotacao, fetchAllCotacoes } from '../infra/cotacoes';
-import { BackButton, FixedBox, NavbarComponent } from '../components';
-import { useAuth } from '../contexts/AuthContext';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { Timestamp } from 'firebase/firestore';
 
 // eslint-disable-next-line react/prop-types
-const Cotacoes = ({ buttons }) => {
-    const { produtoId } = useParams();
+const Cotacoes = ({ produtoId }) => {
     const [cotacoes, setCotacoes] = useState([]);
     const [viewMode, setViewMode] = useState('selecionar');
     const [searchTerm, setSearchTerm] = useState('');
-    const { user } = useAuth();
-    const userEmail = user ? user.email : '';
 
+    // eslint-disable-next-line no-unused-vars
     const { control, handleSubmit, reset, register, setValue, formState: { errors } } = useForm({
         defaultValues: {
             dataCotacao: dayjs() // Define a data padrão como o dia atual
@@ -119,85 +114,79 @@ const Cotacoes = ({ buttons }) => {
     ];
 
     return (
-        <>
-            <NavbarComponent buttons={buttons} userEmail={userEmail} />
-            <Box sx={{ padding: 4 }}>
-                <Typography variant="h4" gutterBottom sx={{ marginBottom: 2 }}>
-                    Gerenciar Cotações Deste Produto
-                </Typography>
-                <Box component="form" onSubmit={handleSubmit(handleSubmitForm)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <TextField
-                        label="Preço"
-                        {...register('preco', { required: 'Preço é obrigatório' })}
-                        error={!!errors.preco}
-                        helperText={errors.preco?.message}
-                        fullWidth
-                    />
-                    <Controller
-                        name="dataCotacao"
-                        control={control}
-                        rules={{ required: 'Data da Cotação é obrigatória' }}
-                        render={({ field }) => (
-                            <DatePicker
-                                label="Data da Cotação"
-                                {...field}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        error={!!errors.dataCotacao}
-                                        helperText={errors.dataCotacao?.message}
-                                        fullWidth
-                                    />
-                                )}
-                                value={field.value ? dayjs(field.value) : dayjs()} // Define a data padrão como o dia atual
-                                onChange={(date) => field.onChange(date ? date.toDate() : null)}
-                            />
-                        )}
-                    />
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                        <Button variant="contained" color="primary" type="submit">
-                            Salvar
-                        </Button>
-                    </Box>
-                </Box>
-                <Typography variant="h4" gutterBottom sx={{ paddingTop: 6 }}>
-                    Visualizar e Filtrar Cotações
-                </Typography>
-                <FormControl fullWidth sx={{ marginTop: 2 }}>
-                    <InputLabel id="view-mode-label">Modo de Visualização</InputLabel>
-                    <Select
-                        labelId="view-mode-label"
-                        value={viewMode}
-                        onChange={(e) => setViewMode(e.target.value)}
-                        fullWidth
-                    >
-                        <MenuItem value="selecionar">Selecione...</MenuItem>
-                        <MenuItem value="todas">Todas as cotações</MenuItem>
-                    </Select>
-                </FormControl>
+        <Box sx={{ padding: 4 }}>
+            <Typography variant="h4" gutterBottom sx={{ marginBottom: 2 }}>
+                Gerenciar Cotações Deste Produto
+            </Typography>
+            <Box component="form" onSubmit={handleSubmit(handleSubmitForm)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <TextField
-                    label="Buscar Produto"
-                    value={searchTerm}
-                    onChange={handleFilterChange}
-                    placeholder="Digite o nome do produto"
+                    label="Preço"
+                    {...register('preco', { required: 'Preço é obrigatório' })}
+                    error={!!errors.preco}
+                    helperText={errors.preco?.message}
                     fullWidth
-                    sx={{ marginTop: 2 }}
                 />
-                <Paper sx={{ height: 400, width: '100%', marginTop: 2 }}>
+                <Controller
+                    name="dataCotacao"
+                    control={control}
+                    rules={{ required: 'Data da Cotação é obrigatória' }}
+                    render={({ field }) => (
+                        <DatePicker
+                            label="Data da Cotação"
+                            {...field}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    error={!!errors.dataCotacao}
+                                    helperText={errors.dataCotacao?.message}
+                                    fullWidth
+                                />
+                            )}
+                            value={field.value ? dayjs(field.value) : dayjs()} // Define a data padrão como o dia atual
+                            onChange={(date) => field.onChange(date ? date.toDate() : null)}
+                        />
+                    )}
+                />
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button variant="contained" color="primary" type="submit">
+                        Salvar
+                    </Button>
+                </Box>
+            </Box>
+            <Box sx={{ marginTop: 4, height: 400 }}>
                     <DataGrid
                         rows={filteredCotacoes}
                         columns={columns}
                         pageSize={5}
                         rowsPerPageOptions={[5]}
-                        autoHeight
                         disableSelectionOnClick
                     />
-                </Paper>
-                <FixedBox>
-                    <BackButton />
-                </FixedBox>
             </Box>
-        </>
+            <Typography variant="h4" gutterBottom sx={{ paddingTop: 6 }}>
+                Visualizar e Filtrar Cotações
+            </Typography>
+            <FormControl fullWidth sx={{ marginTop: 2 }}>
+                <InputLabel id="view-mode-label">Modo de Visualização</InputLabel>
+                <Select
+                    label="Modo de visualização"
+                    labelId="view-mode-label"
+                    value={viewMode}
+                    onChange={(e) => setViewMode(e.target.value)}
+                    fullWidth
+                >
+                    <MenuItem value="selecionar">Selecione...</MenuItem>
+                    <MenuItem value="todas">Todas as cotações (Apenas Listar)</MenuItem>
+                </Select>
+            </FormControl>
+            <TextField
+                label="Filtrar Cotações Pelo Nome do Produto"
+                value={searchTerm}
+                onChange={handleFilterChange}
+                placeholder="Digite o nome do produto"
+                fullWidth
+                sx={{ marginTop: 2 }}
+            />
+        </Box>
     );
 };
 

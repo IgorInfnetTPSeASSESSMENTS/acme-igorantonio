@@ -13,15 +13,14 @@ function AdminDashboard({buttons}) {
   const userEmail = user ? user.email : '';
 
   return (
-    <Box sx={{
-      height: '100%',
-      width: '100%'
-    }}>
+    <>
       <NavbarComponent buttons={buttons} userEmail={userEmail}/>
-      <h1>Admin Dashboard</h1>
-      <p>Welcome, {user?.email}</p>
-      <LogoutButton></LogoutButton>
-    </Box>
+      <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+        <h1>Admin Dashboard</h1>
+        <p>Welcome, {user?.email}</p>
+        <LogoutButton></LogoutButton>
+      </Box>
+    </>
   );
 }
 

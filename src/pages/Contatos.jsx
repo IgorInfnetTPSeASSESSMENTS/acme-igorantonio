@@ -4,19 +4,13 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { regexEmail, regexNumerico } from "../infra/regex";
 import { inserirContato, obterContato, excluirContato, listarContatos } from "../infra/contatos";
-import { BackButton, FixedBox, NavbarComponent } from "../components";
-import { useAuth } from "../contexts/AuthContext";
-import { useParams } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
-export default function Contatos({ buttons }) {
+export default function Contatos({ fornecedorId }) {
   const [contatos, setContatos] = useState([]);
   const [contatoIdEmEdicao, setContatoIdEmEdicao] = useState("");
-  const { fornecedorId } = useParams(); // Captura o ID do fornecedor da URL
+  const [searchTerm, setSearchTerm] = useState("");
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
-  const { user } = useAuth();
-
-  const userEmail = user ? user.email : '';
 
   useEffect(() => {
     async function fetchContatos() {
@@ -83,6 +77,14 @@ export default function Contatos({ buttons }) {
     }
   }
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredContatos = contatos.filter(contato =>
+    contato.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const columns = [
     { field: 'nome', headerName: 'Nome', flex: 1 },
     { field: 'email', headerName: 'Email', flex: 1 },
@@ -91,7 +93,6 @@ export default function Contatos({ buttons }) {
 
   return (
     <>
-      <NavbarComponent buttons={buttons} userEmail={userEmail} />
       <Box sx={{ padding: 4 }}>
         <Typography variant="h4" gutterBottom sx={{marginBottom: 3}}>Cadastro de Contatos</Typography>
         <Box component="form" onSubmit={handleSubmit(submeterDados)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -135,18 +136,32 @@ export default function Contatos({ buttons }) {
           </Box>
         </Box>
 
+        {/* Campo de busca */}
         <Box sx={{ marginTop: 4 }}>
+          <TextField
+            label="Buscar Contato"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            placeholder="Digite o nome do contato"
+            InputLabelProps={{ shrink: true }}
+          />
+        </Box>
+
+        <Box sx={{ marginTop: 4, height: 300 }}> {/* Defina a altura máxima aqui */}
           <DataGrid
-            rows={contatos}
+            rows={filteredContatos}
             columns={columns}
             pageSize={5}
             rowsPerPageOptions={[5]}
-            autoHeight
             disableSelectionOnClick
             onRowClick={(params) => setContatoIdEmEdicao(params.id)}
+            sx={{
+              '& .MuiDataGrid-root': {
+                overflowY: 'auto', // Adiciona rolagem vertical
+              },
+            }}
           />
         </Box>
-        <FixedBox><BackButton></BackButton></FixedBox>
       </Box>
     </>
   );

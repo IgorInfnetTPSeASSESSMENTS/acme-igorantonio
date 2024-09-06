@@ -64,10 +64,13 @@ export async function obterProduto(fornecedorId, produtoId) {
     }
 }
 
+
 // Função para excluir um produto
-export async function excluirProduto(fornecedorId, produtoId) {
+export async function excluirProduto(fornecedorId, produtoId, fornecedorParaExcluir) {
     try {
-        const produtoDoc = doc(db, 'fornecedores', fornecedorId, 'produtos', produtoId);
+        // Verifica se um fornecedor específico foi fornecido
+        const fornecedor = fornecedorParaExcluir || fornecedorId;
+        const produtoDoc = doc(db, 'fornecedores', fornecedor, 'produtos', produtoId);
         await deleteDoc(produtoDoc);
         console.log('Produto excluído com sucesso!');
     } catch (error) {
