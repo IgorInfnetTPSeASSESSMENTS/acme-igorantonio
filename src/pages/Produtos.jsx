@@ -25,9 +25,6 @@ export default function Produtos({ buttons }) {
         async function fetchFornecedores() {
             const fornecedores = await listarFornecedores();
             setFornecedores(fornecedores);
-            if (fornecedores.length > 0) {
-                setFornecedorId(fornecedores[0].id); // Defina um fornecedorId padrão
-            }
         }
         fetchFornecedores();
     }, []);

@@ -165,7 +165,7 @@ export default function Fornecedores({ buttons }) {
             InputLabelProps={{ shrink: true }}
           />
           <TextField
-            label="Produtos"
+            label="Produtos Fornecidos"
             {...register('produtos', {
               required: 'Produtos são obrigatórios',
               minLength: { value: 3, message: 'Produtos devem ter pelo menos 3 caracteres' },

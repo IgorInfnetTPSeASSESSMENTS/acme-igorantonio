@@ -16,8 +16,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 const buttons = [
   { name: 'Fornecedores', path: '/fornecedores' },
   { name: 'Produtos', path: '/produtos' },
-  { name: 'Gerenciar Contas', path: '/gerenciar-contas' },
-  { name: 'Gerenciar Requisicoes de compra', path: '/gerenciar-requisicoes-de-compra' },
+  { name: 'Gerenciamento de usuários', path: '/gerenciamento-de-usuarios' },
+  { name: 'Requisicoes de compra', path: '/requisicoes-de-compra' },
 ];
 
 

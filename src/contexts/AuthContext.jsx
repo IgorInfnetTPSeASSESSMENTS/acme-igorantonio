@@ -36,11 +36,11 @@ export function AuthProvider({ children }) {
             const isContatosPage = location.pathname.startsWith('/contatos/');
             const isProdutosPage = location.pathname === '/produtos';
             const isCotacoesPage = location.pathname.startsWith('/cotacoes/');
-            const isGerenciarContasPage = location.pathname === '/gerenciar-contas';
-            const isGerenciarRequisicoesDeCompraPage = location.pathname === '/gerenciar-requisicoes-de-compra';
+            const isGerenciamentoDeUsuariosPage = location.pathname === '/gerenciamento-de-usuarios';
+            const isGerenciarRequisicoesDeCompraPage = location.pathname === '/requisicoes-de-compra';
 
             if (userDoc.data().role === 'admin') {
-              if (!isAdminPage && !isHomePage && !isFornecedoresPage && !isContatosPage && !isProdutosPage && !isCotacoesPage && !isGerenciarContasPage && !isGerenciarRequisicoesDeCompraPage) {
+              if (!isAdminPage && !isHomePage && !isFornecedoresPage && !isContatosPage && !isProdutosPage && !isCotacoesPage && !isGerenciamentoDeUsuariosPage && !isGerenciarRequisicoesDeCompraPage) {
                 // Redireciona para o dashboard do admin se não estiver em uma página específica
                 navigate('/admin-dashboard');
               }
