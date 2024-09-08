@@ -34,6 +34,11 @@ const NavbarComponent = ({ buttons, userEmail }) => {
   };
 
   const pathAdmin = '/admin-dashboard';
+  const pathFornecedores = '/fornecedores';
+  const pathProdutos = '/produtos';
+  const pathGerenciamento = '/gerenciamento-de-usuarios';
+  const pathRequisicoes = '/requisicoes-de-compra';
+
 
   const getIcon = (name) => {
     switch (name) {
@@ -280,8 +285,8 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                     <ButtonComponent sx={{
                         justifyContent: 'flex-start',
                         textAlign: 'left',
-                        backgroundColor: location.pathname === pathAdmin ? 'white' : '#2E3B4E',
-                        color: location.pathname === pathAdmin ? '#2E3B4E' : 'white',
+                        backgroundColor: location.pathname === pathAdmin || pathFornecedores || pathProdutos || pathGerenciamento || pathRequisicoes ? 'white' : '#2E3B4E',
+                        color: location.pathname === pathAdmin || pathFornecedores || pathProdutos || pathGerenciamento || pathRequisicoes ? '#2E3B4E' : 'white',
                         "&.MuiButtonBase-root:hover": {
                           bgcolor: '#2E3B4E',
                           color: 'white',
@@ -304,8 +309,8 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                     <ButtonComponent sx={{
                         justifyContent: 'flex-start',
                         textAlign: 'left',
-                        backgroundColor: location.pathname === pathAdmin ? 'white' : '#2E3B4E',
-                        color: location.pathname === pathAdmin ? '#2E3B4E' : 'white',
+                        backgroundColor: location.pathname === pathAdmin || pathFornecedores || pathProdutos || pathGerenciamento || pathRequisicoes ? 'white' : '#2E3B4E',
+                        color: location.pathname === pathAdmin || pathFornecedores || pathProdutos || pathGerenciamento || pathRequisicoes ? '#2E3B4E' : 'white',
                         "&.MuiButtonBase-root:hover": {
                           bgcolor: '#2E3B4E',
                           color: 'white',
