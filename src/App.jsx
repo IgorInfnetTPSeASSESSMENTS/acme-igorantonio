@@ -17,7 +17,7 @@ const buttons = [
   { name: 'Fornecedores', path: '/fornecedores' },
   { name: 'Produtos', path: '/produtos' },
   { name: 'Gerenciamento de usuários', path: '/gerenciamento-de-usuarios' },
-  { name: 'Requisicoes de compra', path: '/requisicoes-de-compra' },
+  { name: 'Requisições de compra', path: '/requisicoes-de-compra' },
 ];
 
 

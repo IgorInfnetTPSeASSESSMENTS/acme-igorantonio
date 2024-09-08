@@ -15,7 +15,7 @@ function AdminDashboard({buttons}) {
   return (
     <>
       <NavbarComponent buttons={buttons} userEmail={userEmail}/>
-      <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+      <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', paddingTop: '5rem'}}>
         <h1>Admin Dashboard</h1>
         <p>Welcome, {user?.email}</p>
         <LogoutButton></LogoutButton>

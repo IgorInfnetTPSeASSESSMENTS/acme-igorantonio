@@ -136,7 +136,7 @@ export default function Fornecedores({ buttons }) {
   return (
     <>
       <NavbarComponent buttons={buttons} userEmail={userEmail} />
-      <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+      <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', paddingTop: '5rem'}}>
         <Box sx={{ padding: 4, width: '70%'}}>
           <Typography variant="h4" gutterBottom sx={{ marginBottom: 3 }}>Cadastro de Fornecedores</Typography>
           <Box component="form" onSubmit={handleSubmit(submeterDados)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
