@@ -1,13 +1,15 @@
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import { Box, Menu, MenuItem, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ButtonComponent from '../Button';
-import { Dashboard as DashboardIcon, ArrowDropDown as ArrowDropDownIcon, Person as PersonIcon, Menu as MenuIcon } from '@mui/icons-material';
+import { Dashboard as DashboardIcon, Menu as MenuIcon } from '@mui/icons-material';
 import FactoryIcon from '@mui/icons-material/Factory';
 import CategoryIcon from '@mui/icons-material/Category';
 import GroupsIcon from '@mui/icons-material/Groups';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { useState } from 'react';
 import LogoutButton from '../LogoutButton';
 
@@ -16,24 +18,19 @@ const NavbarComponent = ({ buttons, userEmail }) => {
   const navigate = useNavigate();
   
   // Estados para o menu dropdown e a barra lateral
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const open = Boolean(anchorEl);
+  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
 
   const handleNavigation = (path) => {
     navigate(path);
   };
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleLeftSidebarToggle = () => {
+    setIsLeftSidebarOpen(!isLeftSidebarOpen);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleSidebarToggle = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+  const handleRightSidebarToggle = () => {
+    setIsRightSidebarOpen(!isRightSidebarOpen);
   };
 
   const pathAdmin = '/admin-dashboard';
@@ -55,39 +52,38 @@ const NavbarComponent = ({ buttons, userEmail }) => {
 
   return (
     <>
-      {/* Barra Lateral */}
+      {/* Barra Lateral Esquerda*/}
       <Box
         sx={{
-          width: isSidebarOpen ? '15rem' : '0px', // Ajusta a largura com base no estado
+          width: isLeftSidebarOpen ? '15rem' : '0px', // Ajusta a largura com base no estado
           transition: 'width 0.3s',
           height: '100vh',
           position: 'fixed',
-          paddingTop: isSidebarOpen ? 2 : 2,
-          paddingLeft: isSidebarOpen ? 2 : 0,
-          paddingRight: isSidebarOpen ? 2 : 0,
-          paddingBottom: isSidebarOpen ? 2 : 0,
+          paddingTop: isLeftSidebarOpen ? 2 : 2,
+          paddingLeft: isLeftSidebarOpen ? 2 : 0,
+          paddingRight: isLeftSidebarOpen ? 2 : 0,
+          paddingBottom: isLeftSidebarOpen ? 2 : 0,
           left: 0,
           top: 0,
           display: 'flex',
           flexDirection: 'column',
           color: 'white',
           backgroundColor: 'white',
-          boxShadow: isSidebarOpen ? '2px 0 5px rgba(0,0,0,0.5)' : 'none',
+          boxShadow: isLeftSidebarOpen ? '2px 0 5px rgba(0,0,0,0.5)' : 'none',
           zIndex: 2,
           borderRadius: '0 20px 20px 0',
         }}
       >
-        {isSidebarOpen && (
+        {isLeftSidebarOpen && (
 
 
           <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box
-              onClick={handleSidebarToggle}
+              onClick={handleLeftSidebarToggle}
               sx={{ 
                 color: 'white', 
                 border: 'none',  
                 height: '40px',  
-                cursor: 'pointer',
                 marginBottom: '1.2rem',
                 marginLeft: '0rem'
               }}
@@ -114,6 +110,7 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                 },
                 justifyContent: 'flex-start',
                 textAlign: 'left',
+                cursor: 'pointer'
               }}
             >
               <DashboardIcon sx={{fontSize: '1rem'}}/>
@@ -140,9 +137,10 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1, // Espaço entre ícone e texto
-                  width: isSidebarOpen ? '100%' : 'auto',
-                  whiteSpace: isSidebarOpen ? 'nowrap' : 'nowrap',
-                  overflow: 'hidden', 
+                  width: isLeftSidebarOpen ? '100%' : 'auto',
+                  whiteSpace: isLeftSidebarOpen ? 'nowrap' : 'nowrap',
+                  overflow: 'hidden',
+                  cursor: 'pointer'
                 }}
               >
                 {getIcon(name)}
@@ -153,7 +151,7 @@ const NavbarComponent = ({ buttons, userEmail }) => {
         )}
       </Box>
 
-      {/* Conteúdo Principal e Menu Dropdown */}
+      {/* Menu Principal */}
       <Box
         sx={{
           transition: 'margin-left 0.3s',
@@ -168,17 +166,16 @@ const NavbarComponent = ({ buttons, userEmail }) => {
       >
         <Box sx={{
 
-        //Ícone Menu
+        
         }}>
           <Box
-            onClick={handleSidebarToggle}
+            onClick={handleLeftSidebarToggle}
             sx={{ 
               marginLeft: '1rem',
               justifyContent: 'center',
               color: 'white', 
               border: 'none', 
               display: 'flex',  
-              height: '40px', 
               marginBottom: 2, 
               cursor: 'pointer',
             }}
@@ -188,9 +185,9 @@ const NavbarComponent = ({ buttons, userEmail }) => {
         </Box>
 
 
-        <Box sx={{ display: 'flex', alignItems: 'center', backgroundColor: '#028CFE', padding: '0.5rem 1rem', borderRadius: '8px', position: 'absolute', right: '13%'}}>
+        <Box sx={{ display: 'flex', alignItems: 'center', position: 'absolute', right: '1%'}}>
           <ButtonComponent
-            onClick={handleClick}
+            onClick={handleRightSidebarToggle}
             sx={{
               color: 'white',
               fontWeight: 'bold',
@@ -198,36 +195,139 @@ const NavbarComponent = ({ buttons, userEmail }) => {
               alignItems: 'center',
               gap: 1,
               textTransform: 'none',
+              padding: 0
             }}
           >
-            <PersonIcon />
-            <Typography variant="button" sx={{ fontWeight: 'bold' }}>{userEmail}</Typography>
-            <ArrowDropDownIcon />
+                <Box sx={{ 
+              backgroundImage: `url(src/assets/images/admin.jpg)`, 
+              width: '45px', 
+              height: '45px', 
+              backgroundSize: 'cover', 
+              backgroundPosition: 'center', 
+              backgroundRepeat: 'no-repeat',
+              borderRadius: '50%', }} />
+
           </ButtonComponent>
-          <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            sx={{
-              mt: '18px',
-              ml: 'auto',
-              marginLeft: '3.8%',
-              '& .MuiMenuItem-root': {
-                minWidth: 200,
-                fontWeight: 'bold',
-                display: 'flex',
-                justifyContent: 'center',
-              },
-            }}
-          >
-            <MenuItem onClick={handleClose}>Profile</MenuItem>
-            <MenuItem onClick={handleClose}>Settings</MenuItem>
-            <MenuItem onClick={handleClose}><LogoutButton /></MenuItem>
-          </Menu>
         </Box>
       </Box>
 
-      
+      {/* Barra lateral direita */}
+
+      <Box sx={{
+          width: isRightSidebarOpen ? '15rem' : '0px', // Ajusta a largura com base no estado
+          transition: 'width 0.3s',
+          height: '100vh',
+          position: 'fixed',
+          paddingTop: isRightSidebarOpen ? 2 : 2,
+          paddingLeft: isRightSidebarOpen ? 2 : 0,
+          paddingRight: isRightSidebarOpen ? 2 : 0,
+          paddingBottom: isRightSidebarOpen ? 2 : 0,
+          right: 0,
+          top: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: 'white',
+          boxShadow: isRightSidebarOpen ? '2px 0 5px rgba(0,0,0,0.5)' : 'none',
+          zIndex: 2,
+          borderRadius: '20px 0px 0px 20px',
+        }}
+      >
+        {isRightSidebarOpen && (
+          <Box 
+          sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+          >
+           <Box
+              sx={{ 
+                border: 'none',    
+                marginBottom: '1.2rem',
+                marginLeft: '0rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}>  
+                <Box sx={{
+                  display: 'flex', 
+                  flexDirection: 'row',
+                  marginBottom: '2.4rem'  
+                  }}
+                  >
+                  <Box sx={{ 
+                    backgroundImage: `url(src/assets/images/admin.jpg)`, 
+                    width: '50px', 
+                    height: '50px', 
+                    backgroundSize: 'cover', 
+                    backgroundPosition: 'center', 
+                    backgroundRepeat: 'no-repeat',
+                    borderRadius: '50%',
+                    }} 
+                  />                  
+                  <Box sx={{paddingTop: '0.7rem', marginLeft: '0.7rem', textAlign: 'center'}}>
+                      <Typography sx={{fontSize: '0.75rem', color: '#2E3B4E', fontWeight: 'bold'}}>Logged in as:</Typography>
+                      <Typography sx={{textDecoration: 'underline', fontSize: '0.75rem', color: '#2E3B4E', fontWeight: 'bold'}}>{userEmail}</Typography>
+                  </Box>
+                </Box>
+                <Box sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-start',
+                  textAlign: 'left',
+                  width: isRightSidebarOpen ? '100%' : 'auto',
+                  whiteSpace: isRightSidebarOpen ? 'nowrap' : 'nowrap',
+                  overflow: 'hidden',
+                  gap: 2,
+                  cursor: 'pointer'
+                }}>
+                    <ButtonComponent sx={{
+                        justifyContent: 'flex-start',
+                        textAlign: 'left',
+                        backgroundColor: location.pathname === pathAdmin ? 'white' : '#2E3B4E',
+                        color: location.pathname === pathAdmin ? '#2E3B4E' : 'white',
+                        "&.MuiButtonBase-root:hover": {
+                          bgcolor: '#2E3B4E',
+                          color: 'white',
+                        },
+                        gap: 1,
+                        padding: '0',
+                        }}>
+                      <AccountCircleIcon sx={{fontSize: '1rem'}}></AccountCircleIcon>
+                      <Typography sx={{
+                        fontWeight: 'bold',  
+                        fontSize: '0.875rem',
+                        lineHeight: 1.2,
+                        textTransform: 'none',
+                        padding: '0'
+                        }}
+                        >
+                          Perfil
+                        </Typography>
+                    </ButtonComponent>
+                    <ButtonComponent sx={{
+                        justifyContent: 'flex-start',
+                        textAlign: 'left',
+                        backgroundColor: location.pathname === pathAdmin ? 'white' : '#2E3B4E',
+                        color: location.pathname === pathAdmin ? '#2E3B4E' : 'white',
+                        "&.MuiButtonBase-root:hover": {
+                          bgcolor: '#2E3B4E',
+                          color: 'white',
+                        },
+                        gap: 1,
+                        padding: '0'
+                        }}>
+                      <SettingsIcon sx={{fontSize: '1rem'}}></SettingsIcon>
+                      <Typography sx={{
+                        fontWeight: 'bold',  
+                        fontSize: '0.875rem',
+                        lineHeight: 1.2,
+                        textTransform: 'none',
+                        }}>
+                          Configurações
+                        </Typography>
+                    </ButtonComponent>
+                    <LogoutButton></LogoutButton>
+              </Box>           
+            </Box>           
+          </Box>)}            
+        </Box> 
     </>
   );
 };

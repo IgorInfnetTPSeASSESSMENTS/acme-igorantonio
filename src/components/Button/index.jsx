@@ -3,7 +3,7 @@ import { Button } from '@mui/material';
 
 
 // eslint-disable-next-line react/prop-types
-const ButtonComponent = ({ variant, color, size, onClick, disabled, children, ...rest }) => {
+const ButtonComponent = ({ variant, size, onClick, disabled, children, ...rest }) => {
   return (
     <Button
       variant={variant}

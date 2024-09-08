@@ -19,13 +19,14 @@ function LogoutButton() {
     <ButtonComponent
       onClick={handleLogout}
       variant="contained"
+      style={{fontSize: '0.7rem', fontWeight: 'bold', textTransform: 'none'}}
       sx={{ 
         fontWeight: 'bold',
-        backgroundColor: '#C41E3A', 
-        color: 'white', 
+        backgroundColor: '#DE3163', 
+        color: 'white',
         '&:hover': {
-          backgroundColor: '#DE3163', 
-        },
+          backgroundColor: '#C12B54', 
+        },        
       }}
     >
       Logout
