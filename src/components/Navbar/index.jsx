@@ -104,7 +104,7 @@ const NavbarComponent = ({ buttons, userEmail }) => {
               onClick={() => handleNavigation('/admin-dashboard')}
               sx={{
                 fontWeight: 'bold',
-                lineHeight: 1.2,
+                lineHeight: 0,
                 gap: 1,
                 backgroundColor: location.pathname === pathAdmin ? '#028CFE' : 'white',
                 color: location.pathname === pathAdmin ? 'white' : '#028CFE',
@@ -117,7 +117,7 @@ const NavbarComponent = ({ buttons, userEmail }) => {
               }}
             >
               <DashboardIcon sx={{fontSize: '1rem'}}/>
-              <Typography variant="button" sx={{ fontWeight: 'bold', textTransform: 'none', }}>Dashboard</Typography>
+              <Typography variant="button" sx={{ fontWeight: 'bold', textTransform: 'none', lineHeight: 0 }}>Dashboard</Typography>
             </ButtonComponent>
             {buttons.map(({ name, path }) => (
               <ButtonComponent
