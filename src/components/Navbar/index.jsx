@@ -1,6 +1,5 @@
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ButtonComponent from '../Button';
 import { Dashboard as DashboardIcon, Menu as MenuIcon } from '@mui/icons-material';
@@ -10,26 +9,51 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LogoutButton from '../LogoutButton';
 
 const NavbarComponent = ({ buttons, userEmail }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   
-  // Estados para o menu dropdown e a barra lateral
-  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(true);
+  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
 
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if the click is inside any sidebar or menu button
+      const isClickInsideLeftSidebar = event.target.closest('.left-sidebar') !== null;
+      const isClickInsideRightSidebar = event.target.closest('.right-sidebar') !== null;
+      const isClickInsideMenuButton = event.target.closest('.menu-button') !== null;
+
+      console.log(isClickInsideRightSidebar)
+      if (!isClickInsideLeftSidebar && !isClickInsideRightSidebar && !isClickInsideMenuButton) {
+        console.log("Closing sidebars");
+        if (isLeftSidebarOpen) setIsLeftSidebarOpen(false);
+        if (isRightSidebarOpen) setIsRightSidebarOpen(false);
+      }
+
+      if(isClickInsideLeftSidebar === true) {
+        setIsLeftSidebarOpen(true)
+      }
+
+      if(isClickInsideRightSidebar === true) {
+        setIsRightSidebarOpen(true)
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isLeftSidebarOpen, isRightSidebarOpen]);
 
   const handleLeftSidebarToggle = () => {
+    console.log("Toggling left sidebar");
+    if (isRightSidebarOpen) setIsRightSidebarOpen(false); 
     setIsLeftSidebarOpen(!isLeftSidebarOpen);
   };
 
   const handleRightSidebarToggle = () => {
+    console.log("Toggling right sidebar");
+    if (isLeftSidebarOpen) setIsLeftSidebarOpen(false);
     setIsRightSidebarOpen(!isRightSidebarOpen);
   };
 
@@ -39,9 +63,10 @@ const NavbarComponent = ({ buttons, userEmail }) => {
   const pathGerenciamento = '/gerenciamento-de-usuarios';
   const pathRequisicoes = '/requisicoes-de-compra';
 
-
   const getIcon = (name) => {
     switch (name) {
+      case 'Administrador':
+        return <DashboardIcon sx={{fontSize: '1rem'}}/>;
       case 'Fornecedores':
         return <FactoryIcon sx={{fontSize: '1rem'}}/>;
       case 'Produtos':
@@ -57,11 +82,27 @@ const NavbarComponent = ({ buttons, userEmail }) => {
 
   return (
     <>
-      {/* Barra Lateral Esquerda*/}
+      {/* Overlay para fechar os menus laterais */}
+      {(isLeftSidebarOpen || isRightSidebarOpen) && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0,0,0,0.3)',
+            zIndex: 1,
+            transition: 'width 0.3s',
+          }}
+        />
+      )}
+
+      {/* Barra Lateral Esquerda */}
       <Box
+        className="left-sidebar"
         sx={{
-          width: isLeftSidebarOpen ? '15rem' : '0px', // Ajusta a largura com base no estado
-          transition: 'width 0.3s',
+          width: isLeftSidebarOpen ? '15rem' : '0px',
           height: '100vh',
           position: 'fixed',
           paddingTop: isLeftSidebarOpen ? 2 : 2,
@@ -80,8 +121,6 @@ const NavbarComponent = ({ buttons, userEmail }) => {
         }}
       >
         {isLeftSidebarOpen && (
-
-
           <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box
               onClick={handleLeftSidebarToggle}
@@ -98,17 +137,14 @@ const NavbarComponent = ({ buttons, userEmail }) => {
           backgroundRepeat: 'no-repeat', }} />
             </Box>
 
-
             <ButtonComponent
-              component={RouterLink}
-              to="/admin-dashboard"
-              onClick={() => handleNavigation('/admin-dashboard')}
               sx={{
                 fontWeight: 'bold',
                 lineHeight: 0,
                 gap: 1,
                 backgroundColor: location.pathname === pathAdmin ? '#028CFE' : 'white',
                 color: location.pathname === pathAdmin ? 'white' : '#028CFE',
+                textTransform: 'none',
                 "&.MuiButtonBase-root:hover": {
                   bgcolor: '#028CFE',
                   color: 'white',
@@ -118,15 +154,24 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                 cursor: 'pointer'
               }}
             >
-              <DashboardIcon sx={{fontSize: '1rem'}}/>
-              <Typography variant="button" sx={{ fontWeight: 'bold', textTransform: 'none', lineHeight: 0 }}>Dashboard</Typography>
-            </ButtonComponent>
+              <Link
+              style={{
+                textDecoration: 'none', 
+                color: 'inherit', 
+                display: 'flex', 
+                alignItems: 'center',
+                gap: '0.5rem',
+                width: '100%',
+                height: '100%',
+              }}
+              to={"/admin-dashboard"}>
+                  {getIcon("Administrador")}
+                  {"Dashboard"}
+            </Link>
+            </ButtonComponent>            
             {buttons.map(({ name, path }) => (
               <ButtonComponent
                 key={path}
-                component={RouterLink}
-                to={path}
-                onClick={() => handleNavigation(path)}
                 sx={{
                   textTransform: 'none',
                   lineHeight: 1.2,
@@ -141,15 +186,27 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                   textAlign: 'left',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 1, // Espaço entre ícone e texto
+                  gap: 1,
                   width: isLeftSidebarOpen ? '100%' : 'auto',
                   whiteSpace: isLeftSidebarOpen ? 'nowrap' : 'nowrap',
                   overflow: 'hidden',
                   cursor: 'pointer'
                 }}
               >
-                {getIcon(name)}
-                {name}
+                <Link
+                style={{
+                  textDecoration: 'none', 
+                  color: 'inherit', 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  width: '100%',
+                  height: '100%',
+                }}
+                to={path}>
+                  {getIcon(name)}
+                  {name}
+                </Link>
               </ButtonComponent>
             ))}
           </Box>
@@ -162,19 +219,17 @@ const NavbarComponent = ({ buttons, userEmail }) => {
           transition: 'margin-left 0.3s',
           paddingTop: '1rem', 
           width: '100%', 
-          display: 'flex', // Garante que o nome do usuário não arreda
+          display: 'flex',
           backgroundColor: '#028CFE',
           height: '5.9vh',
           position: 'absolute',
           zIndex: 1,
         }}
       >
-        <Box sx={{
-
-        
-        }}>
+        <Box sx={{}}>
           <Box
             onClick={handleLeftSidebarToggle}
+            className="menu-button"
             sx={{ 
               marginLeft: '1rem',
               justifyContent: 'center',
@@ -189,10 +244,10 @@ const NavbarComponent = ({ buttons, userEmail }) => {
           </Box>
         </Box>
 
-
         <Box sx={{ display: 'flex', alignItems: 'center', position: 'absolute', right: '1%'}}>
           <ButtonComponent
             onClick={handleRightSidebarToggle}
+            className="menu-button"
             sx={{
               color: 'white',
               fontWeight: 'bold',
@@ -217,9 +272,8 @@ const NavbarComponent = ({ buttons, userEmail }) => {
       </Box>
 
       {/* Barra lateral direita */}
-
-      <Box sx={{
-          width: isRightSidebarOpen ? '15rem' : '0px', // Ajusta a largura com base no estado
+      <Box className="right-sidebar" sx={{
+          width: isRightSidebarOpen ? '15rem' : '0px',
           transition: 'width 0.3s',
           height: '100vh',
           position: 'fixed',
@@ -268,7 +322,7 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                   />                  
                   <Box sx={{paddingTop: '0.7rem', marginLeft: '0.7rem', textAlign: 'center'}}>
                       <Typography sx={{fontSize: '0.75rem', color: '#2E3B4E', fontWeight: 'bold'}}>Logged in as:</Typography>
-                      <Typography sx={{textDecoration: 'underline', fontSize: '0.75rem', color: '#2E3B4E', fontWeight: 'bold'}}>{userEmail}</Typography>
+                      <Typography sx={{textDecoration: 'underline', fontSize: '0.75rem', color: '#2E3B4E'}}>{userEmail}</Typography>
                   </Box>
                 </Box>
                 <Box sx={{
@@ -282,7 +336,8 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                   gap: 2,
                   cursor: 'pointer'
                 }}>
-                    <ButtonComponent sx={{
+                    <ButtonComponent 
+                    sx={{
                         justifyContent: 'flex-start',
                         textAlign: 'left',
                         backgroundColor: location.pathname === pathAdmin || pathFornecedores || pathProdutos || pathGerenciamento || pathRequisicoes ? 'white' : '#2E3B4E',
@@ -295,16 +350,21 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                         padding: '0',
                         }}>
                       <AccountCircleIcon sx={{fontSize: '1rem'}}></AccountCircleIcon>
-                      <Typography sx={{
-                        fontWeight: 'bold',  
-                        fontSize: '0.875rem',
-                        lineHeight: 1.2,
+                      <Link
+                      style={{
+                        textDecoration: 'none',
                         textTransform: 'none',
-                        padding: '0'
-                        }}
-                        >
-                          Perfil
-                        </Typography>
+                        color: 'inherit', 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        width: '100%',
+                        height: '100%',
+                        fontWeight: 'bold'
+                      }}
+                      to={"/perfil"}>
+                        {"Perfil"}
+                      </Link>
                     </ButtonComponent>
                     <ButtonComponent sx={{
                         justifyContent: 'flex-start',
@@ -319,14 +379,21 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                         padding: '0'
                         }}>
                       <SettingsIcon sx={{fontSize: '1rem'}}></SettingsIcon>
-                      <Typography sx={{
-                        fontWeight: 'bold',  
-                        fontSize: '0.875rem',
-                        lineHeight: 1.2,
+                      <Link
+                      style={{
+                        textDecoration: 'none',
                         textTransform: 'none',
-                        }}>
-                          Configurações
-                        </Typography>
+                        color: 'inherit', 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        width: '100%',
+                        height: '100%',
+                        fontWeight: 'bold'
+                      }}
+                      to={"/configuracoes"}>
+                        {"Configurações"}
+                      </Link>
                     </ButtonComponent>
                     <LogoutButton></LogoutButton>
               </Box>           
