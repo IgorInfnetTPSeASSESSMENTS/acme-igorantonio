@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
-import { LogoutButton, NavbarComponent } from '../components';
-import { useAuth } from '../contexts/AuthContext';
+import { LogoutButton, NavbarComponent } from '../../components';
+import { useAuth } from '../../contexts/AuthContext';
 
 // eslint-disable-next-line react/prop-types
 function AdminDashboard({buttons}) {

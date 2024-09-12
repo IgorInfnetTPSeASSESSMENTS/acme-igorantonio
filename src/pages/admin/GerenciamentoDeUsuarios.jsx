@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box, Switch, Typography } from '@mui/material';
-import { fetchUsers, toggleUserBlock } from '../infra/usuarios'; // Importe as funções do arquivo usuarios.js
-import { NavbarComponent } from '../components';
+import { fetchUsers, toggleUserBlock } from '../../infra/usuarios'; // Importe as funções do arquivo usuarios.js
+import { NavbarComponent } from '../../components';
+import { useAuth } from '../../contexts/AuthContext';
 
 // eslint-disable-next-line react/prop-types
 export default function GerenciamentoDeUsuarios({buttons}) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+
+  const userEmail = user ? user.email : '';
 
   useEffect(() => {
     const unsubscribe = fetchUsers((data) => {
@@ -38,9 +42,11 @@ export default function GerenciamentoDeUsuarios({buttons}) {
     },
   ];
 
+  
+
   return (
     <>
-        <NavbarComponent buttons={buttons}></NavbarComponent>
+        <NavbarComponent buttons={buttons} userEmail={userEmail}></NavbarComponent>
         <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', paddingTop: '5rem'}}>
             <Box sx={{ padding: 4, width: '70%'}}>
             <Typography variant="h4" gutterBottom sx={{ marginBottom: 3}}>Gerenciamento de usuários</Typography>

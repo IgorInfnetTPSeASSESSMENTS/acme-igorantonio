@@ -4,15 +4,17 @@ import { AuthProvider} from './contexts/AuthContext';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import ProtectedRoute from './components/ProtectedRoute';
-import AdminDashboard from './pages/AdminDashboard';
-import CollaboratorDashboard from './pages/CollaboratorDashboard';
-import Fornecedores from './pages/Fornecedores';
-import Contatos from './pages/Contatos';
-import Produtos from './pages/Produtos';
-import Cotacoes from './pages/Cotacoes';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import Fornecedores from './pages/admin/Fornecedores';
+import Contatos from './pages/admin/Contatos';
+import Produtos from './pages/admin/Produtos';
+import Cotacoes from './pages/admin/Cotacoes';
+import GerenciamentoDeUsuarios from './pages/admin/GerenciamentoDeUsuarios';
+import CollaboratorDashboard from './pages/collaborator/CollaboratorDashboard';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import GerenciamentoDeUsuarios from './pages/GerenciamentoDeUsuarios';
+import AbrirRequisicoesDeCompra from './pages/collaborator/AbrirRequisicoesDeCompra';
+
 
 const buttons = [
   { name: 'Fornecedores', path: '/fornecedores' },
@@ -21,6 +23,9 @@ const buttons = [
   { name: 'Requisições de compra', path: '/requisicoes-de-compra' },
 ];
 
+const buttonsForColaborattor = [
+  { name: 'Requisições de compra', path: '/abrir-requisicoes-de-compra' },
+]
 
 
 function App() {
@@ -42,7 +47,7 @@ function App() {
             />
             <Route
               path="/collaborator-dashboard"
-              element={<ProtectedRoute element={<CollaboratorDashboard />} roleRequired="collaborator" />}
+              element={<ProtectedRoute element={<CollaboratorDashboard buttons={buttonsForColaborattor}/>} roleRequired="collaborator" />}
             />       
 
             {/* Pages */}
@@ -51,6 +56,7 @@ function App() {
             <Route path="/contatos/:fornecedorId" element={<Contatos buttons={buttons} />} />
             <Route path="/cotacoes/:produtoId" element={<Cotacoes buttons={buttons} />} />
             <Route path="/gerenciamento-de-usuarios" element={<GerenciamentoDeUsuarios buttons={buttons} />} />
+            <Route path="/abrir-requisicoes-de-compra" element={<AbrirRequisicoesDeCompra buttons={buttonsForColaborattor}/>} />
         </Routes>
       </LocalizationProvider>
     </AuthProvider>

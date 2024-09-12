@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { regexEmail, regexNumerico } from "../infra/regex";
-import { inserirContato, obterContato, excluirContato, listarContatos, atualizarContato } from "../infra/contatos";
+import { regexEmail, regexNumerico } from "../../infra/regex";
+import { inserirContato, obterContato, excluirContato, listarContatos, atualizarContato } from "../../infra/contatos";
 
 // eslint-disable-next-line react/prop-types
 export default function Contatos({ fornecedorId }) {

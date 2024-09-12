@@ -25,9 +25,9 @@ const NavbarComponent = ({ buttons, userEmail }) => {
       const isClickInsideRightSidebar = event.target.closest('.right-sidebar') !== null;
       const isClickInsideMenuButton = event.target.closest('.menu-button') !== null;
 
-      console.log(isClickInsideRightSidebar)
+      /* console.log(isClickInsideRightSidebar) */
       if (!isClickInsideLeftSidebar && !isClickInsideRightSidebar && !isClickInsideMenuButton) {
-        console.log("Closing sidebars");
+        /* console.log("Closing sidebars"); */
         if (isLeftSidebarOpen) setIsLeftSidebarOpen(false);
         if (isRightSidebarOpen) setIsRightSidebarOpen(false);
       }
@@ -46,13 +46,13 @@ const NavbarComponent = ({ buttons, userEmail }) => {
   }, [isLeftSidebarOpen, isRightSidebarOpen]);
 
   const handleLeftSidebarToggle = () => {
-    console.log("Toggling left sidebar");
+    /* console.log("Toggling left sidebar"); */
     if (isRightSidebarOpen) setIsRightSidebarOpen(false); 
     setIsLeftSidebarOpen(!isLeftSidebarOpen);
   };
 
   const handleRightSidebarToggle = () => {
-    console.log("Toggling right sidebar");
+    /* console.log("Toggling right sidebar"); */
     if (isLeftSidebarOpen) setIsLeftSidebarOpen(false);
     setIsRightSidebarOpen(!isRightSidebarOpen);
   };

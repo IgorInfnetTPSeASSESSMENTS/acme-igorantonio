@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Box, Button, TextField, Typography, FormControlLabel, Checkbox, MenuItem, Select, InputLabel, FormControl, Modal, IconButton } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { inserirProduto, excluirProduto, obterProduto, listarProdutos, listarTodosProdutos, atualizarProduto } from '../infra/produtos';
-import { listarFornecedores } from '../infra/fornecedores';
-import { NavbarComponent } from '../components';
-import { useAuth } from '../contexts/AuthContext';
+import { inserirProduto, excluirProduto, obterProduto, listarProdutos, listarTodosProdutos, atualizarProduto } from '../../infra/produtos';
+import { listarFornecedores } from '../../infra/fornecedores';
+import { NavbarComponent } from '../../components';
+import { useAuth } from '../../contexts/AuthContext';
 import CloseIcon from '@mui/icons-material/Close';
 import Cotacoes from './Cotacoes'; // Importe o componente Cotacoes
 

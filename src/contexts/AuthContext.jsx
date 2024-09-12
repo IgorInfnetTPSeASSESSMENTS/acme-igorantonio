@@ -46,6 +46,7 @@ export function AuthProvider({ children }) {
             const isCotacoesPage = location.pathname.startsWith('/cotacoes/');
             const isGerenciamentoDeUsuariosPage = location.pathname === '/gerenciamento-de-usuarios';
             const isGerenciarRequisicoesDeCompraPage = location.pathname === '/requisicoes-de-compra';
+            const isAbrirRequisicoesDeCompraPage = location.pathname === '/abrir-requisicoes-de-compra';
 
             if (userDoc.data().role === 'admin') {
               if (!isAdminPage && !isHomePage && !isFornecedoresPage && !isContatosPage && !isProdutosPage && !isCotacoesPage && !isGerenciamentoDeUsuariosPage && !isGerenciarRequisicoesDeCompraPage) {
@@ -53,7 +54,7 @@ export function AuthProvider({ children }) {
                 navigate('/admin-dashboard');
               }
             } else if (userDoc.data().role === 'collaborator') {
-              if (!isCollaboratorPage && !isHomePage) {
+              if (!isCollaboratorPage && !isHomePage && !isAbrirRequisicoesDeCompraPage) {
                 // Redireciona para o dashboard do colaborador se não estiver em uma página específica
                 navigate('/collaborator-dashboard');
               }

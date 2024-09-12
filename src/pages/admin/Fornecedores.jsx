@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { atualizarFornecedor, excluirFornecedor, inserirFornecedor, listarFornecedores, obterFornecedor } from "../infra/fornecedores";
+import { atualizarFornecedor, excluirFornecedor, inserirFornecedor, listarFornecedores, obterFornecedor } from "../../infra/fornecedores";
 import { Box, Button, TextField, Typography, Checkbox, Modal, IconButton } from "@mui/material";
-import { regexEmail, regexNumerico } from "../infra/regex";
+import { regexEmail, regexNumerico } from "../../infra/regex";
 import { DataGrid } from "@mui/x-data-grid";
-import { NavbarComponent } from "../components";
-import { useAuth } from "../contexts/AuthContext";
+import { NavbarComponent } from "../../components";
+import { useAuth } from "../../contexts/AuthContext";
 import Contatos from "./Contatos"; // Importe o componente Contatos
 import CloseIcon from '@mui/icons-material/Close'; // Importe o ícone de fechamento
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Box, Button, TextField, Typography, Select, MenuItem, InputLabel, FormControl} from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { listarCotacoes, inserirCotacao, excluirCotacao, fetchAllCotacoes } from '../infra/cotacoes';
+import { listarCotacoes, inserirCotacao, excluirCotacao, fetchAllCotacoes } from '../../infra/cotacoes';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { Timestamp } from 'firebase/firestore';
