@@ -80,7 +80,7 @@ export default function Produtos({ buttons }) {
         try {
             await inserirProduto(dados);
             atualizarListaProdutos();
-            reset({ fornecedor: fornecedorId }); // Mantém o fornecedor selecionado após o reset
+            reset(); 
             setProdutoIdEmEdicao('');
         } catch (error) {
             console.error('Erro ao adicionar produto:', error);
@@ -92,7 +92,7 @@ export default function Produtos({ buttons }) {
             if (produtoIdEmEdicao) {
                 await excluirProduto(fornecedorId, produtoIdEmEdicao);
                 atualizarListaProdutos();
-                reset({ fornecedor: fornecedorId }); // Mantém o fornecedor selecionado após o reset
+                reset();
                 setProdutoIdEmEdicao('');
             }
         } catch (error) {
@@ -104,7 +104,7 @@ export default function Produtos({ buttons }) {
         try {
             await atualizarProduto(fornecedorId, produtoIdEmEdicao, dados);
             atualizarListaProdutos();
-            reset({ fornecedor: fornecedorId }); // Mantém o fornecedor selecionado após o reset
+            reset(); 
             setProdutoIdEmEdicao('');
         } catch (error) {
             console.error('Erro ao editar produto:', error);
@@ -230,7 +230,7 @@ export default function Produtos({ buttons }) {
                             </Select>
                         </FormControl>
                         <Box sx={{ display: 'flex', gap: 2 }}>
-                            <Button variant="contained" color="primary" type="submit">Salvar</Button>
+                            <Button variant="contained" color="primary" type="submit" disabled={fornecedorId === 'todos' || fornecedorId === 'selecionar'}>Salvar</Button>
                             <Button variant="contained" color="error" type="button" onClick={handleExcluir} disabled={fornecedorId === 'todos' || !produtoIdEmEdicao}>Excluir</Button>
                             <Button variant="contained" color="secondary" type="button" onClick={handleSubmit(handleEditar)} disabled={fornecedorId === 'todos' || !produtoIdEmEdicao}>Editar</Button>
                         </Box>

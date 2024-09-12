@@ -22,6 +22,14 @@ export function AuthProvider({ children }) {
         try {
           const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
           if (userDoc.exists()) {
+            if (userDoc.data().isBlocked) {
+              setUser(null);
+              setRole(null);
+              await auth.signOut(); // Desconecta o usuário se estiver bloqueado
+              navigate('/login');
+              return;
+            }
+
             setUser({
               ...currentUser,
               email: currentUser.email // Inclui o e-mail no estado do usuário
