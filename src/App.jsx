@@ -12,6 +12,7 @@ import Produtos from './pages/Produtos';
 import Cotacoes from './pages/Cotacoes';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import GerenciamentoDeUsuarios from './pages/GerenciamentoDeUsuarios';
 
 const buttons = [
   { name: 'Fornecedores', path: '/fornecedores' },
@@ -49,6 +50,7 @@ function App() {
             <Route path="/produtos" element={<Produtos buttons={buttons} />} />
             <Route path="/contatos/:fornecedorId" element={<Contatos buttons={buttons} />} />
             <Route path="/cotacoes/:produtoId" element={<Cotacoes buttons={buttons} />} />
+            <Route path="/gerenciamento-de-usuarios" element={<GerenciamentoDeUsuarios buttons={buttons} />} />
         </Routes>
       </LocalizationProvider>
     </AuthProvider>
