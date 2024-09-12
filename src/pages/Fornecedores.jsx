@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { excluirFornecedor, inserirFornecedor, listarFornecedores, obterFornecedor } from "../infra/fornecedores";
+import { atualizarFornecedor, excluirFornecedor, inserirFornecedor, listarFornecedores, obterFornecedor } from "../infra/fornecedores";
 import { Box, Button, TextField, Typography, Checkbox, Modal, IconButton } from "@mui/material";
 import { regexEmail, regexNumerico } from "../infra/regex";
 import { DataGrid } from "@mui/x-data-grid";
@@ -81,6 +81,26 @@ export default function Fornecedores({ buttons }) {
       console.error('Erro ao excluir fornecedor:', error);
     }
   }
+
+
+  async function handleEditar(dados) {
+    try {
+      if (idEmEdicao) {
+        dados.produtos = dados.produtos
+          ? dados.produtos.split(',').map(produto => produto.trim()).filter(produto => produto)
+          : [];
+        
+        await atualizarFornecedor(idEmEdicao, dados); 
+        atualizarListaFornecedores(); 
+        reset(); 
+        setIdEmEdicao('');
+      }
+    } catch (error) {
+      console.error('Erro ao editar fornecedor:', error);
+    }
+  }
+  
+
 
   async function atualizarListaFornecedores() {
     try {
@@ -199,6 +219,7 @@ export default function Fornecedores({ buttons }) {
             <Box sx={{ display: 'flex', gap: 2 }}>
               <Button variant="contained" color="primary" type="submit">Salvar</Button>
               <Button variant="contained" color="error" type="button" onClick={handleExcluir} disabled={!idEmEdicao}>Excluir</Button>
+              <Button variant="contained" color="secondary" type="button" onClick={handleSubmit(handleEditar)} disabled={!idEmEdicao}>Editar</Button>
             </Box>
           </Box>
 

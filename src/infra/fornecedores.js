@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 export async function inserirFornecedor(novoFornecedor) {
@@ -26,4 +26,15 @@ export async function obterFornecedor(id) {
 
 export async function excluirFornecedor(id) {
   await deleteDoc(doc(db, "fornecedores", id));
+}
+
+export async function atualizarFornecedor(id, fornecedorAtualizado) {
+  try {
+    const fornecedorRef = doc(db, "fornecedores", id);
+    await updateDoc(fornecedorRef, fornecedorAtualizado);
+    console.log('Fornecedor atualizado com sucesso!');
+  } catch (error) {
+    console.error('Erro ao atualizar fornecedor:', error);
+    throw error;
+  }
 }

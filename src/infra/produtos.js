@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 // Função para adicionar um produto
@@ -95,6 +95,25 @@ export async function listarTodosProdutos() {
         return todosProdutos;
     } catch (error) {
         console.error('Erro ao listar todos os produtos:', error);
+        throw error;
+    }
+}
+
+export async function atualizarProduto(fornecedorId, produtoId, dadosAtualizados) {
+    try {
+        if (!fornecedorId || !produtoId) {
+            throw new Error('Fornecedor ID ou Produto ID não fornecido.');
+        }
+
+        // Referência ao documento do produto
+        const produtoDoc = doc(db, 'fornecedores', fornecedorId, 'produtos', produtoId);
+
+        // Atualiza os dados do produto
+        await updateDoc(produtoDoc, dadosAtualizados);
+        
+        console.log('Produto atualizado com sucesso!');
+    } catch (error) {
+        console.error('Erro ao atualizar produto:', error);
         throw error;
     }
 }

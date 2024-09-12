@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Box, Button, TextField, Typography, FormControlLabel, Checkbox, MenuItem, Select, InputLabel, FormControl, Modal, IconButton } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { inserirProduto, excluirProduto, obterProduto, listarProdutos, listarTodosProdutos } from '../infra/produtos';
+import { inserirProduto, excluirProduto, obterProduto, listarProdutos, listarTodosProdutos, atualizarProduto } from '../infra/produtos';
 import { listarFornecedores } from '../infra/fornecedores';
 import { NavbarComponent } from '../components';
 import { useAuth } from '../contexts/AuthContext';
@@ -97,6 +97,17 @@ export default function Produtos({ buttons }) {
             }
         } catch (error) {
             console.error('Erro ao excluir produto:', error);
+        }
+    }
+
+    async function handleEditar(dados) {
+        try {
+            await atualizarProduto(fornecedorId, produtoIdEmEdicao, dados);
+            atualizarListaProdutos();
+            reset({ fornecedor: fornecedorId }); // Mantém o fornecedor selecionado após o reset
+            setProdutoIdEmEdicao('');
+        } catch (error) {
+            console.error('Erro ao editar produto:', error);
         }
     }
 
@@ -221,6 +232,7 @@ export default function Produtos({ buttons }) {
                         <Box sx={{ display: 'flex', gap: 2 }}>
                             <Button variant="contained" color="primary" type="submit">Salvar</Button>
                             <Button variant="contained" color="error" type="button" onClick={handleExcluir} disabled={fornecedorId === 'todos' || !produtoIdEmEdicao}>Excluir</Button>
+                            <Button variant="contained" color="secondary" type="button" onClick={handleSubmit(handleEditar)} disabled={fornecedorId === 'todos' || !produtoIdEmEdicao}>Editar</Button>
                         </Box>
                     </Box>
                     <Box sx={{ marginTop: 4 }}>

@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { regexEmail, regexNumerico } from "../infra/regex";
-import { inserirContato, obterContato, excluirContato, listarContatos } from "../infra/contatos";
+import { inserirContato, obterContato, excluirContato, listarContatos, atualizarContato } from "../infra/contatos";
 
 // eslint-disable-next-line react/prop-types
 export default function Contatos({ fornecedorId }) {
@@ -64,6 +64,18 @@ export default function Contatos({ fornecedorId }) {
     } catch (error) {
       console.error("Erro ao excluir contato:", error);
     }
+  }
+
+  async function handleEditar(dados) {
+    try {
+      await atualizarContato(fornecedorId, contatoIdEmEdicao, dados);
+      atualizarListaContatos();
+      setContatoIdEmEdicao("");
+      reset();
+    } catch(error) {
+      console.error("Erro ao atualizar contato", error);
+    }
+
   }
 
   async function atualizarListaContatos() {
@@ -133,6 +145,7 @@ export default function Contatos({ fornecedorId }) {
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button variant="contained" color="primary" type="submit">Salvar</Button>
             <Button variant="contained" color="error" type="button" onClick={handleExcluir} disabled={!contatoIdEmEdicao}>Excluir</Button>
+            <Button variant="contained" color="secondary" type="button" onClick={handleSubmit(handleEditar)} disabled={!contatoIdEmEdicao}>Editar</Button>
           </Box>
         </Box>
 

@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 export async function inserirContato(fornecedorId, novoContato) {
@@ -26,4 +26,15 @@ export async function obterContato(fornecedorId, contatoId) {
 
 export async function excluirContato(fornecedorId, contatoId) {
   await deleteDoc(doc(db, "fornecedores", fornecedorId, "contatos", contatoId));
+}
+
+export async function atualizarContato(fornecedorId, contatoId, contatoAtualizado) {
+  try {
+    const contatoRef = doc(db, "fornecedores", fornecedorId, "contatos", contatoId);
+    await updateDoc(contatoRef, contatoAtualizado);
+    console.log('Contato atualizado com sucesso!');
+  } catch (error) {
+    console.error('Erro ao atualizar contato:', error);
+    throw error;
+  }
 }
