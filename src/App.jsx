@@ -14,6 +14,7 @@ import CollaboratorDashboard from './pages/collaborator/CollaboratorDashboard';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import AbrirRequisicoesDeCompra from './pages/collaborator/AbrirRequisicoesDeCompra';
+import GerenciarRequisicoesDeCompra from './pages/admin/GerenciarRequisicoesDeCompra';
 
 
 const buttons = [
@@ -57,6 +58,7 @@ function App() {
             <Route path="/cotacoes/:produtoId" element={<Cotacoes buttons={buttons} />} />
             <Route path="/gerenciamento-de-usuarios" element={<GerenciamentoDeUsuarios buttons={buttons} />} />
             <Route path="/abrir-requisicoes-de-compra" element={<AbrirRequisicoesDeCompra buttons={buttonsForColaborattor}/>} />
+            <Route path="/requisicoes-de-compra" element={<GerenciarRequisicoesDeCompra buttons={buttons}/>} />
         </Routes>
       </LocalizationProvider>
     </AuthProvider>
