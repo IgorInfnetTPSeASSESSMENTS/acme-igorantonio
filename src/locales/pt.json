@@ -85,5 +85,9 @@
     "inQuotation": "Em Cotação",
     "quoted": "Cotada",
     "observationsField": "Campo de observações",
-    "sendRequisition": "Enviar Requisição"
+    "sendRequisition": "Enviar Requisição",
+    "requisitionDate": "Data da Requisição",
+    "manageRequisitions": "Gerenciar Requisições",
+    "viewQuotes": "Visualizar Cotações",
+    "view": "Visualizar"
 }

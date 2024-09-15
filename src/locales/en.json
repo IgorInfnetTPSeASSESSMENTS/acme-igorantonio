@@ -85,5 +85,9 @@
     "inQuotation": "In Quotation",
     "quoted": "Quoted",
     "observationsField": "Observations Field",
-    "sendRequisition": "Send Requisition"
+    "sendRequisition": "Send Requisition",
+    "requisitionDate": "Requisition Date",
+    "manageRequisitions": "Manage Requisitions",
+    "viewQuotes": "View Quotes",
+    "view": "View"
 }
