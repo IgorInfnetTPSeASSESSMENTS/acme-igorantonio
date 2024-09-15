@@ -15,6 +15,7 @@ import { NavbarComponent } from '../../components';
 import { useAuth } from '../../contexts/AuthContext'; 
 import dayjs from 'dayjs';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTranslation } from 'react-i18next';
 
 // eslint-disable-next-line react/prop-types
 export default function GerenciarRequisicoesDeCompra({ buttons }) {
@@ -29,6 +30,7 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
   const [produtos, setProdutos] = useState([]);
   const [buscaProduto, setBuscaProduto] = useState('');
   const [cotações, setCotações] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchRequisicoes = async () => {
@@ -65,7 +67,7 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
     if (selectedRequisicao) {
       // Verifica o número de cotações existentes
       if (cotações.length >= 3) {
-        alert('Não é possível adicionar mais de 3 cotações.');
+        alert(t('notPossibleError'));
         return;
       }
 
@@ -78,12 +80,12 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
       setCotações(cotacoesData);
 
       // Determina o novo status
-      let novoStatus = 'Aberto';
+      let novoStatus = t('open');
       if (cotacoesData.length > 0) {
-        novoStatus = 'Em Cotação';
+        novoStatus = t('inQuotation');
       }
       if (cotacoesData.length >= 3) {
-        novoStatus = 'Cotada';
+        novoStatus = t('quoted');
       }
 
       console.log(`Atualizando status para: ${novoStatus}`); // Debug
@@ -111,12 +113,12 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
       setCotações(cotacoesData);
 
       // Determina o novo status
-      let novoStatus = 'Aberto';
+      let novoStatus = t('open');
       if (cotacoesData.length > 0) {
-        novoStatus = 'Em Cotação';
+        novoStatus = t('inQuotation');
       }
       if (cotacoesData.length >= 3) {
-        novoStatus = 'Cotada';
+        novoStatus = t('quoted');
       }
 
       console.log(`Atualizando status para: ${novoStatus}`); // Debug
@@ -151,12 +153,12 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
   };
 
   const columnsRequisicoes = [
-    { field: 'emailColaborador', headerName: 'Email do Colaborador', width: 250 },
-    { field: 'produto', headerName: 'Produto', width: 200 },
+    { field: 'emailColaborador', headerName: t('collaboratorEmail'), width: 250 },
+    { field: 'produto', headerName: t('productName'), width: 200 },
     { field: 'status', headerName: 'Status', width: 150 },
     {
       field: 'dataCotacao',
-      headerName: 'Data da Cotação',
+      headerName: t('requestDate'),
       width: 200,
       renderCell: (params) => (
         <span>{dayjs(params.value.toDate()).format('DD/MM/YYYY HH:mm:ss')}</span>
@@ -164,35 +166,35 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
     },
     {
       field: 'cotacao',
-      headerName: 'Cotação',
+      headerName: t('quotation'),
       width: 150,
       renderCell: (params) => (
         <Button variant="contained" onClick={() => handleOpenModal(params.row)}>
-          Iniciar
+          {t('start')}
         </Button>
       ),
     },
   ];
 
   const columnsProdutos = [
-    { field: 'nome', headerName: 'Nome do Produto', width: 200 },
-    { field: 'fornecedor', headerName: 'Fornecedor', width: 200 },
-    { field: 'precoUnitario', headerName: 'Preço Unitário', width: 150 },
-    { field: 'descricao', headerName: 'Descrição', width: 150 }
+    { field: 'nome', headerName: t('productName'), width: 200 },
+    { field: 'fornecedor', headerName: t('supplierName'), width: 200 },
+    { field: 'precoUnitario', headerName: t('unitPrice'), width: 150 },
+    { field: 'descricao', headerName: t('description'), width: 150 }
   ];
 
   const columnsCotacoes = [
-    { field: 'nomeProduto', headerName: 'Nome do Produto', width: 200 },
-    { field: 'fornecedor', headerName: 'Fornecedor', width: 200 },
-    { field: 'precoUnitario', headerName: 'Preço Unitário', width: 150 },
-    { field: 'observacoes', headerName: 'Observações', width: 200 },
+    { field: 'nomeProduto', headerName: t('productName'), width: 200 },
+    { field: 'fornecedor', headerName: t('supplierName'), width: 200 },
+    { field: 'precoUnitario', headerName: t('unitPrice'), width: 150 },
+    { field: 'observacoes', headerName: t('observations'), width: 200 },
     {
       field: 'actions',
-      headerName: 'Ações',
+      headerName: t('actions'),
       width: 150,
       renderCell: (params) => (
         <Button variant="contained" color="error" onClick={() => handleExcluirCotacao(params.row.id)}>
-          Excluir
+          {t('delete')}
         </Button>
       ),
     },
@@ -214,7 +216,7 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
       >
         <Box sx={{ padding: 4, width: '70%' }}>
           <Typography variant="h4" sx={{ mb: 3 }}>
-            Gerenciar Requisições de Compra
+            {t('managePurchaseRequisitions')}
           </Typography>
 
           <DataGrid
@@ -252,13 +254,13 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
                 <CloseIcon />
             </IconButton>
 
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Cotar Requisição
+            <Typography id="modal-modal-title" variant="h4">
+              {t('quoteRequest')}
             </Typography>
             <form onSubmit={handleSubmit(onSubmitCotacao)}>
               <TextField
                 {...register('idRequisicao')}
-                label="ID da Requisição"
+                label={t('requestId')}
                 fullWidth
                 margin="normal"
                 InputProps={{ readOnly: true }}
@@ -266,7 +268,7 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
               />
 
                 <TextField
-                label="Buscar Produto"
+                label={t('searchProduct')}
                 fullWidth
                 margin="normal"
                 value={buscaProduto}
@@ -289,8 +291,8 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
               </Box>
 
               <TextField
-                {...register('nomeProduto', { required: 'Nome do Produto é obrigatório' })}
-                label="Nome do Produto"
+                {...register('nomeProduto', { required: t('productNameRequired')})}
+                label={t('productName')}
                 fullWidth
                 margin="normal"
                 variant="outlined"
@@ -300,8 +302,8 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
                 error={!!errors.nomeProduto} helperText={errors.nomeProduto?.message}
               />
               <TextField
-                {...register('fornecedor', { required: 'Fornecedor é obrigatório' })}
-                label="Fornecedor"
+                {...register('fornecedor', { required: t('supplierRequired') })}
+                label={t('supplierName')}
                 fullWidth
                 margin="normal"
                 variant="outlined"
@@ -311,8 +313,8 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
                 error={!!errors.fornecedor} helperText={errors.fornecedor?.message}
               />
               <TextField
-                {...register('precoUnitario', { required: 'Preço Unitário é obrigatório', pattern: { value: /^\d+(\.\d{1,2})?$/, message: 'Insira um valor numérico válido' } })}
-                label="Preço Unitário"
+                {...register('precoUnitario', { required: t('unitPriceRequired'), pattern: { value: /^\d+(\.\d{1,2})?$/, message: 'Insira um valor numérico válido' } })}
+                label={t('unitPrice')}
                 fullWidth
                 margin="normal"
                 variant="outlined"
@@ -323,7 +325,7 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
               />
               <TextField
                 {...register('observacoes')}
-                label="Observações"
+                label={t('observations')}
                 fullWidth
                 margin="normal"
                 variant="outlined"
@@ -334,13 +336,13 @@ export default function GerenciarRequisicoesDeCompra({ buttons }) {
 
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
                 <Button variant="contained" type="submit">
-                  Adicionar Cotação
+                  {t('addQuote')}
                 </Button>
               </Box>
             </form>
 
             <Typography variant="h6" sx={{ mt: 4 }}>
-              Cotações Adicionadas
+              {t('addedQuotes')}
             </Typography>
             <DataGrid
               rows={cotações}

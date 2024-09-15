@@ -8,6 +8,8 @@ import { NavbarComponent } from "../../components";
 import { useAuth } from "../../contexts/AuthContext";
 import Contatos from "./Contatos"; // Importe o componente Contatos
 import CloseIcon from '@mui/icons-material/Close'; // Importe o ícone de fechamento
+import { useTranslation } from "react-i18next";
+
 
 // eslint-disable-next-line react/prop-types
 export default function Fornecedores({ buttons }) {
@@ -18,6 +20,7 @@ export default function Fornecedores({ buttons }) {
   const [fornecedorIdSelecionado, setFornecedorIdSelecionado] = useState(null);
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const userEmail = user ? user.email : '';
 
@@ -135,14 +138,14 @@ export default function Fornecedores({ buttons }) {
   };
 
   const columns = [
-    { field: 'nome', headerName: 'Nome', flex: 1 },
-    { field: 'email', headerName: 'Email', flex: 1 },
-    { field: 'fone', headerName: 'Telefone', flex: 1 },
-    { field: 'endereco', headerName: 'Endereço', flex: 1 },
-    { field: 'produtos', headerName: 'Produtos Fornecidos', flex: 1 },
+    { field: 'nome', headerName: t('name'), flex: 1 },
+    { field: 'email', headerName: 'E-mail', flex: 1 },
+    { field: 'fone', headerName: t('phoneNumber'), flex: 1 },
+    { field: 'endereco', headerName: t('address'), flex: 1 },
+    { field: 'produtos', headerName: t('suppliedProducts'), flex: 1 },
     {
       field: 'actions',
-      headerName: 'Contatos',
+      headerName: t('contacts'),
       renderCell: (params) => (
         <Checkbox
           checked={params.row.id === fornecedorIdSelecionado}
@@ -158,77 +161,77 @@ export default function Fornecedores({ buttons }) {
       <NavbarComponent buttons={buttons} userEmail={userEmail} />
       <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', paddingTop: '5rem'}}>
         <Box sx={{ padding: 4, width: '70%'}}>
-          <Typography variant="h4" gutterBottom sx={{ marginBottom: 3 }}>Cadastro de Fornecedores</Typography>
+          <Typography variant="h4" gutterBottom sx={{ marginBottom: 3 }}>{t('suppliersRegistration')}</Typography>
           <Box component="form" onSubmit={handleSubmit(submeterDados)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField
-              label="Nome"
+              label={t('name')}
               {...register('nome', {
-                required: 'Nome é obrigatório',
-                minLength: { value: 5, message: 'Nome deve ter pelo menos 5 caracteres' },
-                maxLength: { value: 50, message: 'Nome deve ter até 50 caracteres' },
+                required: t('nameRequired'),
+                minLength: { value: 5, message: t('nameMinLength') },
+                maxLength: { value: 50, message: t('nameMaxLength') },
               })}
               error={!!errors.nome}
               helperText={errors.nome?.message}
               InputLabelProps={{ shrink: true }}
             />
             <TextField
-              label="Email"
+              label="E-mail"
               {...register('email', {
-                required: 'Email é obrigatório',
-                minLength: { value: 5, message: 'Email deve ter pelo menos 5 caracteres' },
-                maxLength: { value: 30, message: 'Email deve ter até 30 caracteres' },
-                pattern: { value: regexEmail, message: 'Email inválido' },
+                required: t('emailRequired'),
+                minLength: { value: 5, message: t('emailMinLength') },
+                maxLength: { value: 30, message: t('emailMaxLength') },
+                pattern: { value: regexEmail, message: t('emailInvalid') },
               })}
               error={!!errors.email}
               helperText={errors.email?.message}
               InputLabelProps={{ shrink: true }}
             />
             <TextField
-              label="Telefone"
+              label={t('phoneNumber')}
               {...register('fone', {
-                required: 'Telefone é obrigatório',
-                minLength: { value: 8, message: 'Telefone deve ter pelo menos 8 dígitos' },
-                pattern: { value: regexNumerico, message: 'Telefone deve ser numérico' },
+                required: t('phoneRequired'),
+                minLength: { value: 8, message: t('phoneMinLength') },
+                pattern: { value: regexNumerico, message: t('phoneNumeric') },
               })}
               error={!!errors.fone}
               helperText={errors.fone?.message}
               InputLabelProps={{ shrink: true }}
             />
             <TextField
-              label="Endereço"
+              label={t('address')}
               {...register('endereco', {
-                required: 'Endereço é obrigatório',
-                minLength: { value: 10, message: 'Endereço deve ter pelo menos 10 caracteres' },
-                maxLength: { value: 100, message: 'Endereço deve ter até 100 caracteres' },
+                required: t('addressRequired'),
+                minLength: { value: 10, message: t('addressMinLength') },
+                maxLength: { value: 100, message: t('addressMaxLength') },
               })}
               error={!!errors.endereco}
               helperText={errors.endereco?.message}
               InputLabelProps={{ shrink: true }}
             />
             <TextField
-              label="Produtos Fornecidos"
+              label={t('suppliedProducts')}
               {...register('produtos', {
-                required: 'Produtos são obrigatórios',
-                minLength: { value: 3, message: 'Produtos devem ter pelo menos 3 caracteres' },
+                required: t('productsRequired'),
+                minLength: { value: 3, message: t('productsMinLength') },
               })}
-              placeholder="Produto1, Produto2, Produto3"
+              placeholder={t('product123')}
               error={!!errors.produtos}
               helperText={errors.produtos?.message}
               InputLabelProps={{ shrink: true }}
             />
             <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button variant="contained" color="primary" type="submit">Salvar</Button>
-              <Button variant="contained" color="error" type="button" onClick={handleExcluir} disabled={!idEmEdicao}>Excluir</Button>
-              <Button variant="contained" color="secondary" type="button" onClick={handleSubmit(handleEditar)} disabled={!idEmEdicao}>Editar</Button>
+              <Button variant="contained" color="primary" type="submit">{t('save')}</Button>
+              <Button variant="contained" color="error" type="button" onClick={handleExcluir} disabled={!idEmEdicao}>{t('delete')}</Button>
+              <Button variant="contained" color="secondary" type="button" onClick={handleSubmit(handleEditar)} disabled={!idEmEdicao}>{t('edit')}</Button>
             </Box>
           </Box>
 
           <Box>
           <TextField
-            label="Buscar Fornecedor"
+            label={t('searchSupplier')}
             onChange={handleSearchChange}
             sx={{ marginTop: 4, marginBottom: 2 }}
-            placeholder="Digite o nome do fornecedor"
+            placeholder={t('enterName')}
             InputLabelProps={{ shrink: true }}
           />
           </Box>

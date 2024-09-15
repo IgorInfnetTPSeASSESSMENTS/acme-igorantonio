@@ -1,5 +1,5 @@
 import { db } from './firebase'; // ajuste o caminho conforme necessário
-import { collection, getDocs, doc, getDoc, addDoc, deleteDoc, query, where, updateDoc, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, addDoc, deleteDoc, query, updateDoc, orderBy, limit } from 'firebase/firestore';
 
 // Função para buscar todas as requisições de compra
 export const getAllRequisicoes = async () => {
@@ -25,33 +25,38 @@ export const getColaboradorEmailById = async (idDoColaborador) => {
 
 // Função para buscar o preço unitário da cotação mais recente de um produto
 const getPrecoUnitarioMaisRecente = async (fornecedorId, produtoId) => {
-    const cotacoesRef = collection(db, `fornecedores/${fornecedorId}/produtos/${produtoId}/cotacoes`);
-    const q = query(cotacoesRef, orderBy('dataCotacao', 'desc'), limit(1));
-    const snapshot = await getDocs(q);
-  
-    if (!snapshot.empty) {
-      const cotacao = snapshot.docs[0].data();
-      return cotacao.preco;
-    } else {
-      return null;
-    }
-  };
-  
-  // Função para buscar produtos por nome em todos os fornecedores
-  export const getProdutosByNome = async (nomeProduto) => {
-    const fornecedoresRef = collection(db, 'fornecedores');
-    const fornecedoresSnapshot = await getDocs(fornecedoresRef);
-  
-    let produtosEncontrados = [];
-  
-    for (const fornecedorDoc of fornecedoresSnapshot.docs) {
-      const fornecedorId = fornecedorDoc.id;
-      const produtosRef = collection(db, `fornecedores/${fornecedorId}/produtos`);
-      const produtosQuery = query(produtosRef, where('nome', '>=', nomeProduto), where('nome', '<=', nomeProduto + '\uf8ff'));
-      const produtosSnapshot = await getDocs(produtosQuery);
-  
-      const produtos = await Promise.all(produtosSnapshot.docs.map(async (doc) => {
-        const produtoData = doc.data();
+  const cotacoesRef = collection(db, `fornecedores/${fornecedorId}/produtos/${produtoId}/cotacoes`);
+  const q = query(cotacoesRef, orderBy('dataCotacao', 'desc'), limit(1));
+  const snapshot = await getDocs(q);
+
+  if (!snapshot.empty) {
+    const cotacao = snapshot.docs[0].data();
+    return cotacao.preco;
+  } else {
+    return null;
+  }
+};
+
+// Função para buscar produtos por nome em todos os fornecedores
+export const getProdutosByNome = async (nomeProduto) => {
+  const fornecedoresRef = collection(db, 'fornecedores');
+  const fornecedoresSnapshot = await getDocs(fornecedoresRef);
+
+  // Converter nomeProduto para minúsculas
+  const nomeProdutoLower = nomeProduto.toLowerCase();
+
+  let produtosEncontrados = [];
+
+  for (const fornecedorDoc of fornecedoresSnapshot.docs) {
+    const fornecedorId = fornecedorDoc.id;
+    const produtosRef = collection(db, `fornecedores/${fornecedorId}/produtos`);
+    const produtosSnapshot = await getDocs(produtosRef);
+
+    const produtos = await Promise.all(produtosSnapshot.docs.map(async (doc) => {
+      const produtoData = doc.data();
+
+      // Verificar se o nome do produto no banco de dados, convertido para minúsculas, contém o nome do produto buscado em minúsculas
+      if (produtoData.nome.toLowerCase().startsWith(nomeProdutoLower)) {
         const precoUnitario = await getPrecoUnitarioMaisRecente(fornecedorId, doc.id);
         return {
           id: doc.id,
@@ -59,13 +64,17 @@ const getPrecoUnitarioMaisRecente = async (fornecedorId, produtoId) => {
           precoUnitario: precoUnitario || produtoData.precoUnitario, // Atualiza o preço unitário
           ...produtoData,
         };
-      }));
-  
-      produtosEncontrados = [...produtosEncontrados, ...produtos];
-    }
-  
-    return produtosEncontrados;
-  };
+      }
+      return null;
+    }));
+
+    // Filtrar os resultados válidos e adicioná-los à lista
+    produtosEncontrados = [...produtosEncontrados, ...produtos.filter(p => p !== null)];
+  }
+
+  return produtosEncontrados;
+};
+
 
 // Função para adicionar cotação na subcoleção "cotações"
 export const adicionarCotacao = async (requisicaoId, cotacaoData) => {

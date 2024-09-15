@@ -6,12 +6,14 @@ import { listarCotacoes, inserirCotacao, excluirCotacao, fetchAllCotacoes } from
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { Timestamp } from 'firebase/firestore';
+import { useTranslation } from 'react-i18next';
 
 // eslint-disable-next-line react/prop-types
 const Cotacoes = ({ produtoId }) => {
     const [cotacoes, setCotacoes] = useState([]);
     const [viewMode, setViewMode] = useState('selecionar');
     const [searchTerm, setSearchTerm] = useState('');
+    const { t } = useTranslation();
 
     // eslint-disable-next-line no-unused-vars
     const { control, handleSubmit, reset, register, setValue, formState: { errors } } = useForm({
@@ -89,17 +91,17 @@ const Cotacoes = ({ produtoId }) => {
     };
 
     const columns = [
-        { field: 'fornecedorNome', headerName: 'Fornecedor', width: 200 },
-        { field: 'produtoNome', headerName: 'Produto', width: 200 },
-        { field: 'preco', headerName: 'Preço', width: 150 },
-        { field: 'dataCotacao', headerName: 'Data da Cotação', width: 150, 
+        { field: 'fornecedorNome', headerName: t('supplierName'), width: 200 },
+        { field: 'produtoNome', headerName: t('products'), width: 200 },
+        { field: 'preco', headerName: t('price'), width: 150 },
+        { field: 'dataCotacao', headerName: t('quoteDate'), width: 150, 
             renderCell: (params) => dayjs(params.value).isValid() 
                 ? dayjs(params.value).format('DD/MM/YYYY') 
-                : 'Data Inválida' // Formata a data para exibição ou mostra 'Data Inválida'
+                : t('invalidDate') // Formata a data para exibição ou mostra 'Data Inválida'
         },
         ...(viewMode === 'todas' ? [] : [{
             field: 'actions',
-            headerName: 'Ações',
+            headerName: t('actions'),
             width: 200,
             renderCell: (params) => (
                 <Button
@@ -107,7 +109,7 @@ const Cotacoes = ({ produtoId }) => {
                     variant="contained"
                     color="error"
                 >
-                    Excluir
+                    {t('delete')}
                 </Button>
             )
         }])
@@ -116,12 +118,12 @@ const Cotacoes = ({ produtoId }) => {
     return (
         <Box sx={{ padding: 4 }}>
             <Typography variant="h4" gutterBottom sx={{ marginBottom: 2 }}>
-                Gerenciar Cotações Deste Produto
+                {t('manageProductQuotes')}
             </Typography>
             <Box component="form" onSubmit={handleSubmit(handleSubmitForm)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <TextField
-                    label="Preço"
-                    {...register('preco', { required: 'Preço é obrigatório' })}
+                    label={t('price')}
+                    {...register('preco', { required: t('priceRequired') })}
                     error={!!errors.preco}
                     helperText={errors.preco?.message}
                     fullWidth
@@ -129,10 +131,10 @@ const Cotacoes = ({ produtoId }) => {
                 <Controller
                     name="dataCotacao"
                     control={control}
-                    rules={{ required: 'Data da Cotação é obrigatória' }}
+                    rules={{ required: t('quoteDateRequired') }}
                     render={({ field }) => (
                         <DatePicker
-                            label="Data da Cotação"
+                            label={t('quoteDate')}
                             {...field}
                             renderInput={(params) => (
                                 <TextField
@@ -149,7 +151,7 @@ const Cotacoes = ({ produtoId }) => {
                 />
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <Button variant="contained" color="primary" type="submit">
-                        Salvar
+                        {t('save')}
                     </Button>
                 </Box>
             </Box>
@@ -163,26 +165,26 @@ const Cotacoes = ({ produtoId }) => {
                     />
             </Box>
             <Typography variant="h4" gutterBottom sx={{ paddingTop: 6 }}>
-                Visualizar e Filtrar Cotações
+                {t('viewAndFilterQuotes')}
             </Typography>
             <FormControl fullWidth sx={{ marginTop: 2 }}>
-                <InputLabel id="view-mode-label">Modo de Visualização</InputLabel>
+                <InputLabel id="view-mode-label">{t('viewMode')}</InputLabel>
                 <Select
-                    label="Modo de visualização"
+                    label={t('viewMode')}
                     labelId="view-mode-label"
                     value={viewMode}
                     onChange={(e) => setViewMode(e.target.value)}
                     fullWidth
                 >
-                    <MenuItem value="selecionar">Selecione...</MenuItem>
-                    <MenuItem value="todas">Todas as cotações (Apenas Listar)</MenuItem>
+                    <MenuItem value="selecionar">{t('select')}</MenuItem>
+                    <MenuItem value="todas">{t('allQuotesListOnly')}</MenuItem>
                 </Select>
             </FormControl>
             <TextField
-                label="Filtrar Cotações Pelo Nome do Produto"
+                label={t('filterQuotesByProductName')}
                 value={searchTerm}
                 onChange={handleFilterChange}
-                placeholder="Digite o nome do produto"
+                placeholder={t('enterProductName')}
                 fullWidth
                 sx={{ marginTop: 2 }}
             />

@@ -8,6 +8,7 @@ import { NavbarComponent } from '../../components';
 import { useAuth } from '../../contexts/AuthContext';
 import CloseIcon from '@mui/icons-material/Close';
 import Cotacoes from './Cotacoes'; // Importe o componente Cotacoes
+import { useTranslation } from 'react-i18next';
 
 // eslint-disable-next-line react/prop-types
 export default function Produtos({ buttons }) {
@@ -24,6 +25,7 @@ export default function Produtos({ buttons }) {
     const { user } = useAuth();
     const userEmail = user ? user.email : '';
     const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
+    const { t } = useTranslation();
 
 
     useEffect(() => {
@@ -140,15 +142,15 @@ export default function Produtos({ buttons }) {
     // Define as colunas dinamicamente com base na seleção do fornecedor
     const columns = [
         ...(fornecedorId === 'todos' ? [
-            { field: 'fornecedor', headerName: 'Fornecedor', flex: 1 }, // Adiciona a coluna Fornecedor
+            { field: 'fornecedor', headerName: t('supplierName'), flex: 1 }, // Adiciona a coluna Fornecedor
         ] : []),
-        { field: 'nome', headerName: 'Nome', flex: 1 },
-        { field: 'descricao', headerName: 'Descrição', flex: 1 },
-        { field: 'categoria', headerName: 'Categoria', flex: 1 },
-        { field: 'unidadeMedida', headerName: 'Unidade de Medida', flex: 1 },
+        { field: 'nome', headerName: t('name'), flex: 1 },
+        { field: 'descricao', headerName: t('description'), flex: 1 },
+        { field: 'categoria', headerName: t('category'), flex: 1 },
+        { field: 'unidadeMedida', headerName: t('unitOfMeasure'), flex: 1 },
         {
             field: 'cotacoes',
-            headerName: 'Cotações',
+            headerName: t('quotations'),
             headerAlign: 'center',
             align: 'center',
             renderCell: (params) => (
@@ -183,45 +185,45 @@ export default function Produtos({ buttons }) {
             <NavbarComponent buttons={buttons} userEmail={userEmail} />
             <Box sx={{width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', paddingTop: '5rem' }}> 
                 <Box sx={{ padding: 4, width: '70%'}}>
-                    <Typography variant="h4" gutterBottom sx={{ marginBottom: 3}}>Cadastro de Produtos</Typography>
+                    <Typography variant="h4" gutterBottom sx={{ marginBottom: 3}}>{t('productsRegistration')}</Typography>
                     <Box component="form" onSubmit={handleSubmit(submeterDados)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <TextField
-                            label="Nome"
-                            {...register('nome', { required: 'Nome é obrigatório' })}
+                            label={t('name')}
+                            {...register('nome', { required: t('nameRequired') })}
                             error={!!errors.nome}
                             helperText={errors.nome?.message}
                             InputLabelProps={{ shrink: true }}
                         />
                         <TextField
-                            label="Descrição"
+                            label={t('description')}
                             {...register('descricao')}
                             InputLabelProps={{ shrink: true }}
                         />
                         <TextField
-                            label="Categoria"
-                            {...register('categoria', { required: 'Categoria é obrigatória' })}
+                            label={t('category')}
+                            {...register('categoria', { required: t('categoryRequired') })}
                             error={!!errors.categoria}
                             helperText={errors.categoria?.message}
                             InputLabelProps={{ shrink: true }}
                         />
                         <TextField
-                            label="Unidade de Medida"
+                            label={t('unitOfMeasure')}
                             {...register('unidadeMedida')}
                             InputLabelProps={{ shrink: true }}
                         />
                         <FormControl fullWidth variant="outlined">
-                            <InputLabel id="fornecedor-label">Selecionar Fornecedor</InputLabel>
+                            <InputLabel id="fornecedor-label">{t('selectSupplier')}</InputLabel>
                             <Select
-                                label="Selecionar Fornecedor"
+                                label={t('selectSupplier')}
                                 id="fornecedor-select"
                                 value={fornecedorId}
-                                {...register('fornecedor', { required: 'Fornecedor é obrigatório' })}
+                                {...register('fornecedor', { required: t('supplierRequired') })}
                                 onChange={(e) => {setFornecedorId(e.target.value)} }
                                 error={!!errors.fornecedor}
                                 // Adiciona um rótulo visual para o Select
                             >
-                                <MenuItem value="selecionar">Selecione...</MenuItem>
-                                <MenuItem value="todos">Todos os produtos (Apenas Listar)</MenuItem>
+                                <MenuItem value="selecionar">{t('select')}</MenuItem>
+                                <MenuItem value="todos">{t('allProducts')}</MenuItem>
                                 {fornecedores.map((fornecedor) => (
                                     <MenuItem key={fornecedor.id} value={fornecedor.id}>
                                         {fornecedor.nome}
@@ -230,17 +232,17 @@ export default function Produtos({ buttons }) {
                             </Select>
                         </FormControl>
                         <Box sx={{ display: 'flex', gap: 2 }}>
-                            <Button variant="contained" color="primary" type="submit" disabled={fornecedorId === 'todos' || fornecedorId === 'selecionar'}>Salvar</Button>
-                            <Button variant="contained" color="error" type="button" onClick={handleExcluir} disabled={fornecedorId === 'todos' || !produtoIdEmEdicao}>Excluir</Button>
-                            <Button variant="contained" color="secondary" type="button" onClick={handleSubmit(handleEditar)} disabled={fornecedorId === 'todos' || !produtoIdEmEdicao}>Editar</Button>
+                            <Button variant="contained" color="primary" type="submit" disabled={fornecedorId === 'todos' || fornecedorId === 'selecionar'}>{t('save')}</Button>
+                            <Button variant="contained" color="error" type="button" onClick={handleExcluir} disabled={fornecedorId === 'todos' || !produtoIdEmEdicao}>{t('delete')}</Button>
+                            <Button variant="contained" color="secondary" type="button" onClick={handleSubmit(handleEditar)} disabled={fornecedorId === 'todos' || !produtoIdEmEdicao}>{t('edit')}</Button>
                         </Box>
                     </Box>
                     <Box sx={{ marginTop: 4 }}>
                         <TextField
-                            label="Buscar Produto"
+                            label={t('searchProduct')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Digite o nome do produto"
+                            placeholder={t('enterProductName')}
                             InputLabelProps={{ shrink: true }}
                         />
                     </Box>

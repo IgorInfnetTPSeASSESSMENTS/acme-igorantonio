@@ -2,6 +2,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '../../infra/firebase.js';
 import ButtonComponent from '../Button/index.jsx';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 function LogoutButton() {
   const navigate = useNavigate();
@@ -14,8 +15,11 @@ function LogoutButton() {
       console.error('Erro ao deslogar: ', error);
     }
   };
+  
+  const { t } = useTranslation();
 
   return (
+    
     <ButtonComponent
       onClick={handleLogout}
       variant="contained"
@@ -29,7 +33,7 @@ function LogoutButton() {
         },        
       }}
     >
-      Logout
+      {t('logout')}
     </ButtonComponent>
   );
 }

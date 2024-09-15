@@ -11,9 +11,12 @@ import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useState, useEffect } from 'react';
 import LogoutButton from '../LogoutButton';
+import LanguageSelector from '../LanguageSelector';
+import { useTranslation } from 'react-i18next';
 
 const NavbarComponent = ({ buttons, userEmail }) => {
   const location = useLocation();
+  const { t } = useTranslation();
   
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
@@ -67,13 +70,13 @@ const NavbarComponent = ({ buttons, userEmail }) => {
     switch (name) {
       case 'Administrador':
         return <DashboardIcon sx={{fontSize: '1rem'}}/>;
-      case 'Fornecedores':
+      case t('suppliers'):
         return <FactoryIcon sx={{fontSize: '1rem'}}/>;
-      case 'Produtos':
+      case t('products'):
         return <CategoryIcon sx={{fontSize: '1rem'}}/>;
-      case 'Gerenciamento de usuários':
+      case t('userManagement'):
         return <GroupsIcon sx={{fontSize: '1rem'}}/>;
-      case 'Requisições de compra':
+      case t('purchaseRequisitions'):
         return <RequestQuoteIcon sx={{fontSize: '1rem'}}/>;
       default:
         return null;
@@ -166,7 +169,7 @@ const NavbarComponent = ({ buttons, userEmail }) => {
               }}
               to={"/admin-dashboard"}>
                   {getIcon("Administrador")}
-                  {"Dashboard"}
+                  {t("dashboard")}
             </Link>
             </ButtonComponent>            
             {buttons.map(({ name, path }) => (
@@ -243,8 +246,9 @@ const NavbarComponent = ({ buttons, userEmail }) => {
             <MenuIcon sx={{ fontSize: '38px', marginTop: '0.1rem' }} />
           </Box>
         </Box>
-
+        
         <Box sx={{ display: 'flex', alignItems: 'center', position: 'absolute', right: '1%'}}>
+        <LanguageSelector></LanguageSelector>
           <ButtonComponent
             onClick={handleRightSidebarToggle}
             className="menu-button"
@@ -321,7 +325,7 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                     }} 
                   />                  
                   <Box sx={{paddingTop: '0.7rem', marginLeft: '0.7rem', textAlign: 'center'}}>
-                      <Typography sx={{fontSize: '0.75rem', color: '#2E3B4E', fontWeight: 'bold'}}>Logged in as:</Typography>
+                      <Typography sx={{fontSize: '0.75rem', color: '#2E3B4E', fontWeight: 'bold'}}>{t('loggedInAs')}</Typography>
                       <Typography sx={{textDecoration: 'underline', fontSize: '0.75rem', color: '#2E3B4E'}}>{userEmail}</Typography>
                   </Box>
                 </Box>
@@ -363,7 +367,7 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                         fontWeight: 'bold'
                       }}
                       to={"/perfil"}>
-                        {"Perfil"}
+                        {t('profile')}
                       </Link>
                     </ButtonComponent>
                     <ButtonComponent sx={{
@@ -392,7 +396,7 @@ const NavbarComponent = ({ buttons, userEmail }) => {
                         fontWeight: 'bold'
                       }}
                       to={"/configuracoes"}>
-                        {"Configurações"}
+                        {t('settings')}
                       </Link>
                     </ButtonComponent>
                     <LogoutButton></LogoutButton>

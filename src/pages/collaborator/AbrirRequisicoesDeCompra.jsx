@@ -8,12 +8,14 @@ import { NavbarComponent } from '../../components';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { db } from '../../infra/firebase';
 import dayjs from 'dayjs'; // Certifique-se de que dayjs está importado
+import { useTranslation } from 'react-i18next';
 
 // eslint-disable-next-line react/prop-types
 export default function RequisicoesDeCompra({ buttons }) {
   const { user } = useAuth();
   const { register, handleSubmit, reset } = useForm();
   const [requisicoes, setRequisicoes] = useState([]);
+  const { t } = useTranslation();
   const userEmail = user ? user.email : '';
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export default function RequisicoesDeCompra({ buttons }) {
           variant="contained"
           color="error"
         >
-          Excluir
+          {t('delete')}
         </Button>
       ),
     },
@@ -98,22 +100,22 @@ export default function RequisicoesDeCompra({ buttons }) {
         }}
       >
         <Box sx={{ padding: 4, width: '70%' }}>
-          <Typography variant="h4">Requisições de Compra</Typography>
+          <Typography variant="h4">{t('purchaseRequisitions')}</Typography>
           <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
             <TextField
               {...register('produto')}
-              label="Nome do Produto"
+              label={t('productName')}
               fullWidth
               margin="normal"
             />
             <TextField
               {...register('observacoes')}
-              label="Campo de Observações"
+              label={t('observationsField')}
               fullWidth
               margin="normal"
             />
             <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
-              Enviar Requisição
+              {t('sendRequisition')}
             </Button>
           </Box>
 

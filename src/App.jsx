@@ -15,22 +15,45 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import AbrirRequisicoesDeCompra from './pages/collaborator/AbrirRequisicoesDeCompra';
 import GerenciarRequisicoesDeCompra from './pages/admin/GerenciarRequisicoesDeCompra';
+import i18n from 'i18next';
+import { initReactI18next, useTranslation } from 'react-i18next';
+import enTranslation from './locales/en.json';
+import ptTranslation from './locales/pt.json';
 
+const getStoredLanguage = () => {
+  const storedLang = localStorage.getItem('i18nextLng');
+  return storedLang ? storedLang : 'en';
+};
 
-const buttons = [
-  { name: 'Fornecedores', path: '/fornecedores' },
-  { name: 'Produtos', path: '/produtos' },
-  { name: 'Gerenciamento de usuários', path: '/gerenciamento-de-usuarios' },
-  { name: 'Requisições de compra', path: '/requisicoes-de-compra' },
-];
-
-const buttonsForColaborattor = [
-  { name: 'Requisições de compra', path: '/abrir-requisicoes-de-compra' },
-]
+i18n
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en: { translation: enTranslation },
+      pt: { translation: ptTranslation },
+    },
+    lng: getStoredLanguage(),
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false,
+    },
+  });
 
 
 function App() {
 
+  const { t } = useTranslation();
+
+  const buttons = [
+    { name: t('suppliers'), path: '/fornecedores' },
+    { name: t('products'), path: '/produtos' },
+    { name: t('userManagement'), path: '/gerenciamento-de-usuarios' },
+    { name: t('purchaseRequisitions'), path: '/requisicoes-de-compra' },
+  ];
+  
+  const buttonsForColaborattor = [
+    { name: t('purchaseRequisitions'), path: '/abrir-requisicoes-de-compra' },
+  ]
 
   return (
     <AuthProvider>

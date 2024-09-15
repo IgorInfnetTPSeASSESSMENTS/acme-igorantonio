@@ -4,6 +4,7 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { regexEmail, regexNumerico } from "../../infra/regex";
 import { inserirContato, obterContato, excluirContato, listarContatos, atualizarContato } from "../../infra/contatos";
+import { useTranslation } from "react-i18next";
 
 // eslint-disable-next-line react/prop-types
 export default function Contatos({ fornecedorId }) {
@@ -11,6 +12,7 @@ export default function Contatos({ fornecedorId }) {
   const [contatoIdEmEdicao, setContatoIdEmEdicao] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm();
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchContatos() {
@@ -98,64 +100,64 @@ export default function Contatos({ fornecedorId }) {
   );
 
   const columns = [
-    { field: 'nome', headerName: 'Nome', flex: 1 },
-    { field: 'email', headerName: 'Email', flex: 1 },
-    { field: 'fone', headerName: 'Telefone', flex: 1 },
+    { field: 'nome', headerName: t('name'), flex: 1 },
+    { field: 'email', headerName: 'E-mail', flex: 1 },
+    { field: 'fone', headerName: t('phoneNumber'), flex: 1 },
   ];
 
   return (
     <>
       <Box sx={{ padding: 4 }}>
-        <Typography variant="h4" gutterBottom sx={{marginBottom: 3}}>Cadastro de Contatos</Typography>
+        <Typography variant="h4" gutterBottom sx={{marginBottom: 3}}>{t('contactRegistration')}</Typography>
         <Box component="form" onSubmit={handleSubmit(submeterDados)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <TextField
-            label="Nome"
+            label={t('name')}
             {...register('nome', {
-              required: 'Nome é obrigatório',
-              minLength: { value: 5, message: 'Nome deve ter pelo menos 5 caracteres' },
-              maxLength: { value: 50, message: 'Nome deve ter até 50 caracteres' },
+              required: t('nameRequired'),
+              minLength: { value: 5, message: t('nameMinLength') },
+              maxLength: { value: 50, message: t('nameMaxLength') },
             })}
             error={!!errors.nome}
             helperText={errors.nome?.message}
             InputLabelProps={{ shrink: true }}
           />
           <TextField
-            label="Email"
+            label="E-mail"
             {...register('email', {
-              required: 'Email é obrigatório',
-              minLength: { value: 5, message: 'Email deve ter pelo menos 5 caracteres' },
-              maxLength: { value: 30, message: 'Email deve ter até 30 caracteres' },
-              pattern: { value: regexEmail, message: 'Email inválido' },
+              required: t('emailRequired'),
+              minLength: { value: 5, message: t('emailMinLength') },
+              maxLength: { value: 30, message: t('emailMaxLength') },
+              pattern: { value: regexEmail, message: t('emailInvalid') },
             })}
             error={!!errors.email}
             helperText={errors.email?.message}
             InputLabelProps={{ shrink: true }}
           />
           <TextField
-            label="Telefone"
+            label={t("phoneNumber")}
             {...register('fone', {
-              required: 'Telefone é obrigatório',
-              minLength: { value: 8, message: 'Telefone deve ter pelo menos 8 dígitos' },
-              pattern: { value: regexNumerico, message: 'Telefone deve ser numérico' },
+              required: t('phoneRequired'),
+              minLength: { value: 8, message: t('phoneMinLength') },
+              pattern: { value: regexNumerico, message: t('phoneNumeric') },
             })}
             error={!!errors.fone}
             helperText={errors.fone?.message}
             InputLabelProps={{ shrink: true }}
           />
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button variant="contained" color="primary" type="submit">Salvar</Button>
-            <Button variant="contained" color="error" type="button" onClick={handleExcluir} disabled={!contatoIdEmEdicao}>Excluir</Button>
-            <Button variant="contained" color="secondary" type="button" onClick={handleSubmit(handleEditar)} disabled={!contatoIdEmEdicao}>Editar</Button>
+            <Button variant="contained" color="primary" type="submit">{t('save')}</Button>
+            <Button variant="contained" color="error" type="button" onClick={handleExcluir} disabled={!contatoIdEmEdicao}>{t('delete')}</Button>
+            <Button variant="contained" color="secondary" type="button" onClick={handleSubmit(handleEditar)} disabled={!contatoIdEmEdicao}>{t('edit')}</Button>
           </Box>
         </Box>
 
         {/* Campo de busca */}
         <Box sx={{ marginTop: 4 }}>
           <TextField
-            label="Buscar Contato"
+            label={t('searchContact')}
             value={searchTerm}
             onChange={handleSearchChange}
-            placeholder="Digite o nome do contato"
+            placeholder={t('enterContactName')}
             InputLabelProps={{ shrink: true }}
           />
         </Box>
