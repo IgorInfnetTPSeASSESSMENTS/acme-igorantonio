@@ -172,12 +172,12 @@ export default function Produtos({ buttons }) {
     // Adiciona o nome do fornecedor aos produtos quando necessário
     const prepareProductsForDisplay = () => {
         if (fornecedorId === 'todos') {
-            return produtos.map(produto => ({
+            return filteredProducts.map(produto => ({
                 ...produto,
                 fornecedor: fornecedores.find(fornecedor => fornecedor.id === produto.fornecedorId)?.nome || 'Desconhecido',
             }));
         }
-        return produtos;
+        return filteredProducts;
     };
 
     return (

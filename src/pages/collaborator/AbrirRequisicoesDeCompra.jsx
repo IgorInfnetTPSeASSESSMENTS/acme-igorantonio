@@ -98,7 +98,7 @@ export default function RequisicoesDeCompra({ buttons }) {
   ];
 
   const cotacoesColumns = [
-    { field: 'fornecedor', headerName: t('supplier'), width: 200 },
+    { field: 'fornecedor', headerName: t('supplierName'), width: 200 },
     { field: 'nomeProduto', headerName: t('productName'), width: 200 },
     { field: 'observacoes', headerName: t('observationsField'), width: 250 },
     { field: 'precoUnitario', headerName: t('unitPrice'), width: 150 },
@@ -184,7 +184,7 @@ export default function RequisicoesDeCompra({ buttons }) {
             onClick={() => console.log("Exportar CSV")}
           >
             <CSVLink data={cotacoes} filename={`cotacoes_${selectedRequisicaoId}.csv`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              {t('exportCsv')}
+              {t('exportCSV')}
             </CSVLink>
           </Button>
         </Box>

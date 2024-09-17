@@ -89,5 +89,6 @@
     "requisitionDate": "Requisition Date",
     "manageRequisitions": "Manage Requisitions",
     "viewQuotes": "View Quotes",
-    "view": "View"
+    "view": "View",
+    "exportCSV": "Export CSV"
 }

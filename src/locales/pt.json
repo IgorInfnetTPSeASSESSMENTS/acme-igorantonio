@@ -89,5 +89,6 @@
     "requisitionDate": "Data da Requisição",
     "manageRequisitions": "Gerenciar Requisições",
     "viewQuotes": "Visualizar Cotações",
-    "view": "Visualizar"
+    "view": "Visualizar",
+    "exportCSV": "Exportar em CSV"
 }
